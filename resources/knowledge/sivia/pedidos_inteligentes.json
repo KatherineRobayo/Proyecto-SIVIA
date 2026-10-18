@@ -1,0 +1,43 @@
+{
+    "version": "2026-09-30",
+    "nombre": "Pedidos inteligentes",
+    "ruta_publica": "/pedido-inteligente",
+    "como_llegar": "Desde la página principal, el botón Hacer pedido abre esta página. También se puede volver al inicio desde ahí.",
+    "que_ve_el_usuario": [
+        "Un formulario para elegir un negocio de ejemplo, escribir qué desea pedir, indicar nombre, teléfono y dirección.",
+        "Un botón para dictar el pedido con la voz (si el navegador lo permite).",
+        "Un botón llamado Procesar con IA y un panel de interpretación. Esa interpretación todavía es una maqueta visual: no confirma ni guarda un pedido real automáticamente."
+    ],
+    "relacion_con_pedidos_internos": "El módulo Pedidos del menú interno (con inicio de sesión) es distinto: ahí el personal registra y gestiona pedidos del negocio.",
+    "rol_del_chatbot": "El asistente de la página principal solo explica el proceso y orienta a Pedidos inteligentes. Nunca crea, interpreta, confirma ni modifica un pedido.",
+    "preguntas_frecuentes": [
+        {
+            "pregunta": "¿Cómo funciona el asistente de pedidos con IA?",
+            "respuesta": "El asistente usa procesamiento de lenguaje natural y reconocimiento de voz. Tus clientes pueden escribir o decir algo como 'quiero dos panes y un café con leche' y el sistema entiende el pedido, lo registra automáticamente y lo envía a cocina o caja. No necesitan aprender códigos ni menús complicados: piden como hablan normalmente."
+        },
+        {
+            "pregunta": "¿Puedo hacer pedidos por voz?",
+            "respuesta": "Sí. El cliente puede dictar su pedido en voz alta y el sistema lo interpreta y lo registra. Esto es especialmente útil en restaurantes, cafeterías o tiendas donde el cliente quiere pedir rápido sin escribir."
+        },
+        {
+            "pregunta": "¿El sistema entiende lenguaje natural?",
+            "respuesta": "Sí, y eso es lo que me hace diferente. No necesitas que el cliente escriba 'producto 001, cantidad 2'. Puede decir 'quiero dos panes y un café con leche' y entiendo la intención, identifico los productos y registro el pedido. La tecnología debe hablar el idioma de las personas, no al revés."
+        },
+        {
+            "pregunta": "¿La IA aprende de mis clientes?",
+            "respuesta": "La IA mejora su comprensión a medida que se usa, porque va reconociendo formas de pedir y expresiones frecuentes. Lo que no hace es almacenar datos personales de tus clientes sin tu control: la información del negocio y de los pedidos es tuya. Aprender sí, invadir no."
+        },
+        {
+            "pregunta": "¿Necesito saber de tecnología para usar la IA?",
+            "respuesta": "No. El asistente está pensado para que cualquier persona lo use: tú, tus empleados y tus clientes. Si sabes hablar o escribir, puedes usar la IA de SIVIA sin capacitación técnica."
+        },
+        {
+            "pregunta": "¿La IA entiende modismos colombianos?",
+            "respuesta": "Sí. Está entrenada para entender expresiones comunes en Colombia, así que no tienes que pedirle a tus clientes que hablen 'formal' ni que usen palabras rebuscadas. Habla como quieras: yo me adapto a ti."
+        },
+        {
+            "pregunta": "¿Siigo tiene inteligencia artificial para pedidos por voz?",
+            "respuesta": "No. Incluyo un asistente de pedidos con IA que entiende voz y texto, algo que Siigo no ofrece. Esa es una de las diferencias más grandes: tus clientes pueden pedir como hablan."
+        }
+    ]
+}

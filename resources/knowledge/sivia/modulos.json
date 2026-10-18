@@ -1,0 +1,201 @@
+{
+    "version": "2026-09-30",
+    "modulos": [
+        {
+            "id": "dashboard",
+            "nombre": "Dashboard",
+            "estado": "disponible",
+            "descripcion_breve": "Panel principal del sistema interno con resumen operativo.",
+            "que_permite_hacer": [
+                "Ver indicadores del negocio",
+                "Consultar notificaciones de stock bajo",
+                "Entrar al resto de módulos del menú"
+            ],
+            "orientacion": "Inicia sesión y entra a Dashboard para ver el resumen del sistema.",
+            "acceso": "Usuarios autenticados con rol administrador o almacenista."
+        },
+        {
+            "id": "inventario",
+            "nombre": "Inventario",
+            "estado": "disponible",
+            "descripcion_breve": "Control de stock de productos, con alertas cuando el inventario llega al mínimo.",
+            "que_permite_hacer": [
+                "Consultar existencias",
+                "Buscar y filtrar productos",
+                "Ajustar stock"
+            ],
+            "orientacion": "En el menú interno, abre Inventario.",
+            "acceso": "Usuarios autenticados."
+        },
+        {
+            "id": "productos",
+            "nombre": "Productos",
+            "estado": "disponible",
+            "descripcion_breve": "Catálogo de productos del negocio.",
+            "que_permite_hacer": [
+                "Ver productos",
+                "Registrar y actualizar información de productos",
+                "Relacionarlos con inventario y pedidos"
+            ],
+            "orientacion": "En el menú interno, abre Productos.",
+            "acceso": "Usuarios autenticados."
+        },
+        {
+            "id": "pedidos",
+            "nombre": "Pedidos",
+            "estado": "disponible",
+            "descripcion_breve": "Gestión interna de pedidos del negocio (creación, consulta, edición de pendientes y cambio de estado).",
+            "que_permite_hacer": [
+                "Crear un pedido con productos, cantidades y método de pago",
+                "Ver el detalle y el total",
+                "Cambiar el estado (pendiente, confirmado, enviado, entregado o cancelado)"
+            ],
+            "orientacion": "Inicia sesión y abre Pedidos en el menú interno. No confundir con Pedidos inteligentes de la página pública.",
+            "acceso": "Usuarios autenticados."
+        },
+        {
+            "id": "pedidos_inteligentes",
+            "nombre": "Pedidos inteligentes",
+            "estado": "pagina_publica",
+            "descripcion_breve": "Página pública donde un cliente puede escribir o dictar lo que desea pedir.",
+            "que_permite_hacer": [
+                "Abrir la página sin iniciar sesión",
+                "Escribir el pedido en un cuadro de texto",
+                "Dictar el pedido con el micrófono del navegador"
+            ],
+            "orientacion": "En la página principal, usa el botón Hacer pedido o entra a /pedido-inteligente.",
+            "acceso": "Público. El chatbot no realiza el pedido; solo explica cómo llegar a esa página."
+        },
+        {
+            "id": "ajustes",
+            "nombre": "Ajustes",
+            "estado": "disponible",
+            "descripcion_breve": "Configuración de cuenta y, para administradores, gestión de usuarios y empresas.",
+            "que_permite_hacer": [
+                "Actualizar correo o contraseña",
+                "Administrar usuarios (solo admin)",
+                "Administrar empresas (solo admin)"
+            ],
+            "orientacion": "En el menú interno, Ajustes aparece para el administrador.",
+            "acceso": "Administrador."
+        },
+        {
+            "id": "login",
+            "nombre": "Inicio de sesión",
+            "estado": "disponible",
+            "descripcion_breve": "Acceso al sistema interno con correo y contraseña.",
+            "que_permite_hacer": [
+                "Entrar al dashboard",
+                "Recuperar contraseña si se olvidó"
+            ],
+            "orientacion": "En la página principal, usa Acceder o Iniciar sesión.",
+            "acceso": "Público."
+        },
+        {
+            "id": "recibos",
+            "nombre": "Recibos",
+            "estado": "pendiente",
+            "descripcion_breve": "Aparece en el menú interno, pero todavía no está desarrollado.",
+            "que_permite_hacer": [],
+            "orientacion": "Aún no hay un módulo de recibos funcional. No se debe describir como disponible.",
+            "acceso": "Usuarios autenticados (entrada de menú)."
+        },
+        {
+            "id": "caja",
+            "nombre": "Caja",
+            "estado": "pendiente",
+            "descripcion_breve": "Aparece en el menú del administrador, pero todavía no está desarrollado.",
+            "que_permite_hacer": [],
+            "orientacion": "Aún no hay un módulo de caja funcional.",
+            "acceso": "Administrador (entrada de menú)."
+        },
+        {
+            "id": "reportes",
+            "nombre": "Reportes",
+            "estado": "pendiente",
+            "descripcion_breve": "Aparece en el menú del administrador, pero todavía no está desarrollado.",
+            "que_permite_hacer": [],
+            "orientacion": "Aún no hay un módulo de reportes funcional. El dashboard sí muestra un resumen.",
+            "acceso": "Administrador (entrada de menú)."
+        },
+        {
+            "id": "movimientos",
+            "nombre": "Movimientos",
+            "estado": "pendiente",
+            "descripcion_breve": "Hay una entrada relacionada, pero la pantalla todavía no está desarrollada.",
+            "que_permite_hacer": [],
+            "orientacion": "Aún no hay un módulo de movimientos funcional.",
+            "acceso": "Usuarios autenticados (entrada de menú)."
+        }
+    ],
+    "no_existen": [
+        "No hay un módulo llamado Compras.",
+        "Ventas y Facturación se mencionan en la página de presentación, pero no existen como módulos funcionales en el menú interno."
+    ],
+    "preguntas_frecuentes": [
+        {
+            "pregunta": "¿Es un POS, un software de inventario o ambas cosas?",
+            "respuesta": "Soy un sistema completo que combina punto de venta, control de inventario, facturación, pedidos, compras, caja y reportes. No necesitas contratar varias herramientas por separado: lo integro todo en un solo lugar, para que tú dirijas tu negocio sin complicaciones."
+        },
+        {
+            "pregunta": "¿En qué se diferencia de un programa de facturación común?",
+            "respuesta": "Un programa de facturación solo emite documentos. Yo voy mucho más allá: cuando registras una venta, el inventario se actualiza solo, la factura se genera al instante, el pedido queda registrado y puedes ver reportes de todo lo que pasa en tu negocio. Además, incluyo un asistente con inteligencia artificial que tus clientes pueden usar para pedir por voz o texto."
+        },
+        {
+            "pregunta": "¿Sirve para tiendas de barrio, restaurantes, panaderías o cualquier negocio?",
+            "respuesta": "Sí, y no es una respuesta genérica. Soy modular: puedes activar solo los módulos que tu negocio necesita. Una tienda de barrio puede usar inventario y ventas; un restaurante puede sumar pedidos en mesa, pedidos para llevar y el asistente de IA; una panadería puede manejar productos perecederos y ventas rápidas. Me adapto a tu operación, no al revés."
+        },
+        {
+            "pregunta": "¿Puedo manejar ventas, inventario y facturación en un solo sistema?",
+            "respuesta": "Sí, y todo está conectado. Cuando registras una venta, el sistema descuenta automáticamente los productos del inventario, genera la factura con los datos del cliente y actualiza los reportes del día. No tienes que hacer el mismo trabajo tres veces en tres programas distintos. Así organizas tu negocio y te organizas tú."
+        },
+        {
+            "pregunta": "¿Cómo me ayuda a controlar el inventario?",
+            "respuesta": "Te muestro en tiempo real cuántas unidades tienes de cada producto, te aviso cuando algo está por agotarse, guardo el historial de entradas y salidas, y te permito hacer ajustes manuales cuando detectas diferencias. Así dejas de depender de cuadernos o de la memoria y tomas el control de tu negocio."
+        },
+        {
+            "pregunta": "¿Me avisa cuando se está acabando un producto?",
+            "respuesta": "Sí. Tú defines un stock mínimo para cada producto y te envío una notificación dentro de la plataforma cuando las existencias bajan de ese nivel. Así puedes pedir a tiempo y no perder ventas por falta de producto."
+        },
+        {
+            "pregunta": "¿Puedo generar reportes de ventas por día, semana o mes?",
+            "respuesta": "Sí. El módulo de reportes te permite consultar ventas, inventario, compras y movimientos por el periodo que necesites: hoy, esta semana, este mes o un rango personalizado. Además, puedes exportarlos en PDF o Excel para revisarlos con calma o compartirlos con tu contador."
+        },
+        {
+            "pregunta": "¿Puedo manejar varios usuarios con permisos diferentes?",
+            "respuesta": "Sí. Puedes crear usuarios con roles como administrador, almacenista o cajero. Cada uno ve y hace solo lo que le corresponde. Por ejemplo, el cajero registra ventas, el almacenista ajusta inventario y el administrador ve todos los reportes y la configuración del sistema."
+        },
+        {
+            "pregunta": "¿Puedo registrar compras a proveedores?",
+            "respuesta": "Sí. El módulo de compras te permite registrar tus proveedores, crear órdenes de compra y registrar la entrada de mercancía al inventario. Así llevas un control claro de cuánto compras, a quién y a qué precio."
+        },
+        {
+            "pregunta": "¿Puedo exportar información a PDF o Excel?",
+            "respuesta": "Sí. Puedes exportar reportes, facturas, listados de productos e inventario en PDF, CSV y Excel. Eso te facilita compartir información con tu contador, guardar respaldos o analizar los datos por tu cuenta. Tu información es tuya, y puedes llevarla contigo."
+        },
+        {
+            "pregunta": "¿Se integra con la DIAN de verdad?",
+            "respuesta": "Genero facturas con la estructura básica que exige la DIAN. La validación y firma digital ante la DIAN se habilitan según el plan que elijas, para que puedas cumplir con la normativa sin complicaciones."
+        },
+        {
+            "pregunta": "¿Puedo recibir pagos con Nequi, Daviplata o tarjeta?",
+            "respuesta": "Sí. Incluyo una pasarela de pagos integrada con opciones como tarjeta débito/crédito, Nequi, Daviplata y PayPal. Tus clientes pueden pagar desde el mismo sistema, y tú ves el registro de cada pago. Así amplías las formas en que te pagan y te adaptas a tu estilo de vida."
+        },
+        {
+            "pregunta": "¿SIVIA se adapta a mi tipo de negocio?",
+            "respuesta": "Sí. Soy modular y me adapto a tiendas de barrio, restaurantes, panaderías, cafeterías, minimercados y comercios en general. Activas los módulos que necesitas y dejas los que no. Cada negocio edifica su propio estilo de vida."
+        },
+        {
+            "pregunta": "¿Puedo personalizar los módulos?",
+            "respuesta": "Sí. Puedes activar solo los módulos que tu negocio necesita y agregar otros cuando quieras. Por ejemplo, puedes empezar con inventario y ventas, y después sumar facturación o pedidos con IA. Yo me adapto a ti, no al revés."
+        },
+        {
+            "pregunta": "¿Puedo empezar solo con inventario y luego agregar facturación?",
+            "respuesta": "Sí. Puedes empezar con el Plan Básico, que incluye inventario y ventas, y cuando tu negocio lo requiera, subir al Profesional o Premium para sumar facturación, pedidos con IA, caja y reportes avanzados. Yo crezco contigo, paso a paso."
+        },
+        {
+            "pregunta": "¿Funciona si tengo varias sedes?",
+            "respuesta": "Sí. El Plan Premium incluye soporte para múltiples sedes, así puedes gestionar varios locales desde un mismo sistema y ver la información consolidada o por sede. Organizar tu negocio también es organizar tu vida."
+        }
+    ]
+}
