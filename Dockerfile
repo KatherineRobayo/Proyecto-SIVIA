@@ -1,27 +1,36 @@
-FROM richarvey/nginx-php-fpm:3.1.6
+# Usamos la imagen oficial de PHP (versión 8.2, que es compatible con Laravel 12)
+FROM php:8.2-cli
 
-# 1. Nos movemos a una carpeta temporal que NO sea un volumen
-WORKDIR /tmp/project
+# Instalamos las dependencias del sistema necesarias para PHP y Laravel
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# 2. Copiamos todo el proyecto a la carpeta temporal
+# Instalamos las extensiones de PHP
+RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd
+
+# Instalamos Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copiamos el proyecto al contenedor
+WORKDIR /app
 COPY . .
 
-# 3. Instalamos las dependencias de PHP (Composer) DENTRO de la carpeta temporal
-RUN composer install --no-dev --optimize-autoloader
+# Instalamos las dependencias sin las de desarrollo (producción)
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# 4. Movemos todo el contenido (incluyendo la carpeta vendor ya instalada) a la carpeta final
-RUN mv /tmp/project/* /var/www/html/ && \
-    mv /tmp/project/.* /var/www/html/ 2>/dev/null || true
+# Damos permisos a las carpetas de storage y cache
+RUN chmod -R 775 storage bootstrap/cache
 
-# 5. Configuramos las variables de entorno para producción
-ENV WEBROOT /var/www/html/public
-ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 1
-ENV REAL_IP_HEADER 1
-ENV APP_ENV production
-ENV APP_DEBUG false
-ENV LOG_CHANNEL stderr
-ENV COMPOSER_ALLOW_SUPERUSER 1
+# Exponemos el puerto (Render usa el 10000 por defecto)
+EXPOSE 10000
 
-# 6. Comando de inicio
-CMD ["/start.sh"]
+# El comando que inicia la aplicación en Render
+CMD php artisan serve --host=0.0.0.0 --port=10000
