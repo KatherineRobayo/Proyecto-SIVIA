@@ -10,21 +10,22 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Collection;
 use App\Models\Producto;
 use App\Models\Movimiento;
-use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /**
+     * Register any application services.
+     */
     public function register(): void
     {
         //
     }
 
+    /**
+     * Bootstrap any application services.
+     */
     public function boot(): void
     {
-        if (app()->environment('production')) {
-            Schema::disableForeignKeyConstraints();
-        }
-
         RateLimiter::for('chatbot', function (Request $request) {
             return Limit::perMinute((int) config('chatbot.rate_limit_per_minute', 10))
                 ->by($request->ip())
@@ -36,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('*', function ($view) {
+
             $notifAlertas = collect();
             $notifMovimientos = collect();
             $notifCount = 0;
@@ -67,4 +69,3 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 }
-
