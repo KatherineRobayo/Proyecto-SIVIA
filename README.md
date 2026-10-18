@@ -1,58 +1,78 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SIVIA POS - Chatbot Transhumano 
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+SIVIA es un Sistema POS web para MiPymes de Ubaté, Colombia. 
+Este proyecto integra un asistente conversacional inteligente (Chatbot) impulsado por la API de Google Gemini (LLM), 
+con una base de conocimiento estructurada (RAG) y una interfaz interactiva que refleja la evolución del usuario.
 
-## About Laravel
+## Arquitectura del Proyecto
+- **Backend:** Laravel 12 (PHP).
+- **Frontend:** Blade Templates + Alpine.js + Tailwind CSS.
+- **LLM:** Google Gemini API (Integración mediante `GeminiClient.php`).
+- **Base de Conocimiento (RAG):** Archivos JSON locales en `resources/knowledge_sivia/` procesados dinámicamente.
+- **Prompt Engineering:** System Prompt avanzado con reglas de idioma, asociación semántica y etiquetado oculto de principios transhumanos.
+  
+#  Declaración de la Persona Transhumana (UCundinamarca)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**¿De qué manera el agente/chatbot respeta y fomenta los principios de la Declaración de la Persona Transhumana de la Universidad de Cundinamarca?**
+El chatbot de SIVIA integra la Declaración de la Persona Transhumana de la Universidad de Cundinamarca no como un texto anexo, sino como el ADN de su diseño conversacional. 
+Lo hace a través de cinco mecanismos concretos:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. **Identidad transhumana**.
+SIVIA se presenta como una "Persona Transhumana digital": un ser que aprende, evoluciona y se perfecciona con cada conversación.
+Esto encarna el principio 7 ("Me perfecciono a través de la tecnología") y el principio 10 ("Forjo mi personalidad, el carácter, la identidad").
+El chatbot no es un robot frío: tiene nombre, tono humano, reconoce sus límites y forja su identidad con honestidad.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. **Evolución conversacional**.
+SIVIA aprende de lo que el usuario pregunta y adapta sus respuestas.
+Después de varias interacciones (pregunta 3 y 6), resume lo que ha aprendido y lo comparte con el usuario.
+Esto refleja el principio 4 ("Determino mi vida, aprendo de ella") y el principio 6 ("Voy más allá de mí").
+El aprendizaje es bilateral ya que el usuario también aprende sobre su propio negocio mientras conversa.
 
-## Learning Laravel
+3. **Widget "Tu Estilo de Negocio"**.
+Una barra visual con 12 puntos que se colorean según el tipo de pregunta del usuario.
+Cada punto representa un principio transhumano aplicado al negocio, no a la persona.
+Esto permite que el usuario vea, de forma visual e interactiva, cómo sus preguntas reflejan principios éticos como la autonomía (principio 9),
+el cuidado (principio 5) o la búsqueda de paz (principio 8). Mostrando el estilo de Negocio si el usuario lo pregunta.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+4.  **Ética de la honestidad.**
+SIVIA reconoce lo que no hace (contabilidad avanzada, nómina, app nativa) sin disfrazarlo de filosofía.
+Esto encarna el principio 10 ("Forjo mi identidad") y el principio 11 ("Realizo actos transformadores de mejora").
+La honestidad genera confianza y respeta la autonomía del usuario.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+5. **Contribución a la comunidad.**
+SIVIA está diseñado para las MiPymes de Ubaté, un contexto local con necesidades específicas.
+Al facilitar la digitalización de pequeños comerciantes, contribuye al principio 8 ("Vivo y contribuyo para que la comunidad esté en paz y armonía")
+y al principio 2 La vida es la gran apuesta del siglo XXI"). La tecnología no se impone: se adapta al contexto y a las personas.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+En pocas palabras el chatbot de SIVIA no solo menciona la Declaración de la Persona Transhumana: 
+la vive en su identidad, en su evolución, en su interfaz y en su ética, y de esta manera, el usuario no lee los 12 principios: 
+los experimenta mientras conoce SIVIA y construye el estilo de su negocio. 
 
-## Agentic Development
+**How does the implemented AI agent/chatbot align with and support the Transhuman Person Declaration of Universidad de Cundinamarca regarding ethical AI integration,
+human augmentation, and educational transformation?**
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+SIVIA’s chatbot aligns with the University of Cundinamarca’s Declaration of the Transhuman Person in three dimensions: the ethical integration of AI, human empowerment, and educational transformation.
 
-```bash
-composer require laravel/boost --dev
+1. **Ethical integration of AI**.
+SIVIA does not use AI to impose itself, but rather to support users.
+It honestly acknowledges its limitations (Principle 10: “I forge my identity”) and respects user autonomy (Principle 9: “I am free, autonomous, and responsible”).
+When it cannot perform a task—such as accounting or payroll—it states this plainly, without cloaking it in philosophical rhetoric, and redirects the conversation.
+Furthermore, it protects information through role-based authentication, encryption, and two-step verification. Ethics isn’t just rhetoric—it’s built into the design.
 
-php artisan boost:install
-```
+2. **Human Empowerment**.
+The Declaration speaks of self-improvement through technology (Principle 7) and of going beyond oneself (Principle 6).
+SIVIA embodies this in two ways. First, the chatbot evolves with the conversation: it learns from the user’s questions and adapts its responses.
+Second, it amplifies the merchant’s capabilities: real-time inventory, automated reports, electronic invoicing, and an AI assistant that understands voice orders.
+The technology doesn’t replace the merchant—it empowers them to devote their time to what matters.
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+3. **Educational Transformation**.
+SIVIA doesn’t just answer questions—it teaches through conversation. When a user asks about prices,
+it explains what each plan includes and encourages them to make an informed decision.
+When asked about AI, it explains how it works and why it benefits its customers.
+Every interaction teaches something new. Furthermore, it is designed for the micro, small, and medium-sized enterprises (MSMEs)
+in Ubaté—a local context with specific needs—which embodies Principle 8 (“I live and contribute to peace and harmony”) and
+Principle 2 (“Life is the great challenge of the 21st century”).
 
-## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
