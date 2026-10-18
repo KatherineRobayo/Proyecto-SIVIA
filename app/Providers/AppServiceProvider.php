@@ -14,66 +14,57 @@ use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
-{
-    // ESTA ES LA LÍNEA MÁGICA: Solo se ejecuta en producción (Render)
+    {
         if (app()->environment('production')) {
             Schema::disableForeignKeyConstraints();
-
-    RateLimiter::for('chatbot', function (Request $request) {
-        return Limit::perMinute((int) config('chatbot.rate_limit_per_minute', 10))
-            ->by($request->ip())
-            ->response(fn (Request $request, array $headers) => response()->json([
-                'success' => false,
-                'reply' => config('chatbot.messages.too_many'),
-                'code' => 'too_many',
-            ], 429, $headers));
-    });
-
-    View::composer('*', function ($view) {
-
-        $notifAlertas = collect();
-        $notifMovimientos = collect();
-        $notifCount = 0;
-
-        // Si existen tablas/modelos
-        try {
-
-            if (class_exists(\App\Models\Producto::class)) {
-                $notifAlertas = Producto::whereColumn('stock', '<=', 'stock_minimo')
-                    ->take(5)
-                    ->get();
-            }
-
-            if (class_exists(\App\Models\Movimiento::class)) {
-                $notifMovimientos = Movimiento::latest()
-                    ->take(5)
-                    ->get();
-            }
-
-            $notifCount = $notifAlertas->count();
-
-        } catch (\Exception $e) {
-            // silencioso
         }
 
-        $view->with([
-            'notifAlertas' => $notifAlertas,
-            'notifMovimientos' => $notifMovimientos,
-            'notifCount' => $notifCount,
-        ]);
-    });
+        RateLimiter::for('chatbot', function (Request $request) {
+            return Limit::perMinute((int) config('chatbot.rate_limit_per_minute', 10))
+                ->by($request->ip())
+                ->response(fn (Request $request, array $headers) => response()->json([
+                    'success' => false,
+                    'reply' => config('chatbot.messages.too_many'),
+                    'code' => 'too_many',
+                ], 429, $headers));
+        });
+
+        View::composer('*', function ($view) {
+            $notifAlertas = collect();
+            $notifMovimientos = collect();
+            $notifCount = 0;
+
+            try {
+                if (class_exists(\App\Models\Producto::class)) {
+                    $notifAlertas = Producto::whereColumn('stock', '<=', 'stock_minimo')
+                        ->take(5)
+                        ->get();
+                }
+
+                if (class_exists(\App\Models\Movimiento::class)) {
+                    $notifMovimientos = Movimiento::latest()
+                        ->take(5)
+                        ->get();
+                }
+
+                $notifCount = $notifAlertas->count();
+
+            } catch (\Exception $e) {
+                // silencioso
+            }
+
+            $view->with([
+                'notifAlertas' => $notifAlertas,
+                'notifMovimientos' => $notifMovimientos,
+                'notifCount' => $notifCount,
+            ]);
+        });
+    }
 }
-}
-}
+
