@@ -10,6 +10,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Collection;
 use App\Models\Producto;
 use App\Models\Movimiento;
+use Illuminate\Support\Facades\URL; // <-- Nueva importación
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
         RateLimiter::for('chatbot', function (Request $request) {
             return Limit::perMinute((int) config('chatbot.rate_limit_per_minute', 10))
                 ->by($request->ip())
