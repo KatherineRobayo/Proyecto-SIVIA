@@ -18,8 +18,13 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-pl
     && npm install \
     && npm run build
 
+# Aseguramos que Laravel publique los assets en producción
+RUN php artisan vendor:publish --tag=laravel-assets --ansi --force || true
+
+# Damos permisos
 RUN chmod -R 777 storage bootstrap/cache
 
 EXPOSE 10000
 
+# Arrancamos el servidor
 CMD php artisan config:clear && php artisan view:clear && php artisan migrate:fresh --seed --force && php artisan serve --host=0.0.0.0 --port=10000
