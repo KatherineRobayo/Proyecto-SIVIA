@@ -1,7 +1,7 @@
-# Usamos la imagen oficial de PHP (versión 8.2, que es compatible con Laravel 12)
-FROM php:8.3-cli
+# Usamos la imagen oficial de PHP 8.4 (la que pide tu proyecto)
+FROM php:8.4-cli
 
-# Instalamos las dependencias del sistema necesarias para PHP y Laravel
+# Instalamos dependencias del sistema y extensiones de PHP necesarias
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -11,26 +11,24 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Instalamos las extensiones de PHP
-RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd
 
 # Instalamos Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copiamos el proyecto al contenedor
+# Copiamos el proyecto
 WORKDIR /app
 COPY . .
 
-# Instalamos las dependencias sin las de desarrollo (producción)
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Instalamos las dependencias (sin dev)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
-# Damos permisos a las carpetas de storage y cache
-RUN chmod -R 775 storage bootstrap/cache
+# Permisos para storage y cache
+RUN chmod -R 777 storage bootstrap/cache
 
-# Exponemos el puerto (Render usa el 10000 por defecto)
+# Exponemos el puerto 10000 (el que usa Render)
 EXPOSE 10000
 
-# El comando que inicia la aplicación en Render
+# Comando para correr el servidor
 CMD php artisan serve --host=0.0.0.0 --port=10000
