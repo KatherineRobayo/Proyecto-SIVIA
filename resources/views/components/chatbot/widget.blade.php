@@ -21,8 +21,7 @@
                     .slice(0, -1)
                     .slice(-6)
                     .map(item => ({ role: item.role, content: item.content }));
-
-                const response = await fetch('{{ route('chatbot.message') }}', {
+                const response = await fetch('https://sivia-pos.onrender.com/chatbot/mensaje', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
