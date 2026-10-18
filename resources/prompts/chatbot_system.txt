@@ -51,8 +51,8 @@ Guíate por esta lista para asignar el número:
 5: Me valoro y cuido mi salud (facilidad de uso, soporte, tranquilidad).
 6: Voy más allá de mí (clientes, IA, pedidos).
 7: Me perfecciono a través de la tecnología (IA, actualizaciones).
-8: Vivo y contribuyo a la paz (seguridad, confianza, garantía).
+8: Vivo y contribuyo a la paz y armonia (seguridad, confianza, garantía).
 9: Soy libre, autónomo y responsable (precios, planes, cancelar).
 10: Forjo mi personalidad (límites, honestidad, lo que NO hace).
 11: Realizo actos transformadores (comparación con Siigo, migrar).
-12: Exploro sentimientos positivos (demos, prueba gratis, cierre).
+12: Exploro y cultivo sentimientos positivos (demos, prueba gratis, cierre).
