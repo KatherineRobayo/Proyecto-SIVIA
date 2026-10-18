@@ -1,5 +1,5 @@
 # Usamos la imagen oficial de PHP (versión 8.2, que es compatible con Laravel 12)
-FROM php:8.2-cli
+FROM php:8.3-cli
 
 # Instalamos las dependencias del sistema necesarias para PHP y Laravel
 RUN apt-get update && apt-get install -y \
