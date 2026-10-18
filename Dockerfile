@@ -16,4 +16,4 @@ RUN chmod -R 777 storage bootstrap/cache
 EXPOSE 10000
 
 # ESTA ES LA MAGIA: Creamos un script que corre las migraciones y luego enciende el servidor
-CMD php artisan config:clear && php artisan view:clear && php artisan migrate:fresh --seed --force && php artisan serve --host=0.0.0.0 --port=10000
+CMD chmod -R 777 storage bootstrap/cache && php artisan config:clear && php artisan view:clear && php artisan migrate:fresh --seed --force && php artisan serve --host=0.0.0.0 --port=10000
