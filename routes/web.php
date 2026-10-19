@@ -10,6 +10,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\AjustesController;
 use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\ChatbotController;
 
 
 Route::get('/', function () {
@@ -19,6 +20,9 @@ Route::get('/', function () {
 // Pedidos inteligentes 
 Route::get('/pedido-inteligente', [SmartOrderController::class, 'index'])
     ->name('smart.order');
+
+// Ruta del Chatbot
+Route::post('/chatbot/mensaje', [ChatbotController::class, 'message'])->name('chatbot.message');
 
 
 // SOLO ADMIN puede acceder al register
