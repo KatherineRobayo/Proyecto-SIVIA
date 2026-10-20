@@ -1,17 +1,17 @@
-# SIVIA POS - Chatbot Transhumano 
+# 1.  SIVIA POS - Chatbot Transhumano 
 
 SIVIA es un Sistema POS web para MiPymes de Ubaté, Colombia. 
 Este proyecto integra un asistente conversacional inteligente (Chatbot) impulsado por la API de Google Gemini (LLM), 
 con una base de conocimiento estructurada (RAG) y una interfaz interactiva que refleja la evolución del usuario.
 
-## Arquitectura del Proyecto
+## 2. Arquitectura del Proyecto
 - **Backend:** Laravel 12 (PHP).
 - **Frontend:** Blade Templates + Alpine.js + Tailwind CSS.
 - **LLM:** Google Gemini API (Integración mediante `GeminiClient.php`).
 - **Base de Conocimiento (RAG):** Archivos JSON locales en `resources/knowledge_sivia/` procesados dinámicamente.
 - **Prompt Engineering:** System Prompt avanzado con reglas de idioma, asociación semántica y etiquetado oculto de principios transhumanos.
   
-#  Declaración de la Persona Transhumana (UCundinamarca)
+# 3.  Declaración de la Persona Transhumana (UCundinamarca)
 
 **¿De qué manera el agente/chatbot respeta y fomenta los principios de la Declaración de la Persona Transhumana de la Universidad de Cundinamarca?**
 El chatbot de SIVIA integra la Declaración de la Persona Transhumana de la Universidad de Cundinamarca no como un texto anexo, sino como el ADN de su diseño conversacional. 
@@ -74,5 +74,30 @@ in Ubaté—a local context with specific needs—which embodies Principle 8 (�
 Principle 2 (“Life is the great challenge of the 21st century”).
 
 
+## 4. Base de conocimiento
 
+Para evitar información falsa, el proyecto incorpora una base 
+de conocimiento organizada en **seis archivos JSON**. Cada archivo contiene 
+información específica de SIVIA:
+
+`beneficios.json` Precios, planes, comparativas con la competencia y facilidades de uso. 
+`faq.json` Soporte técnico, contexto local y proceso de implementación. 
+`general.json` Identidad de SIVIA y la Persona Transhumana. 
+`limites.json` Reglas de seguridad y límites del chatbot. 
+`modulos.json` Módulos disponibles, pendientes y no existentes. 
+`pedidos_inteligentes.json` Información sobre el asistente de pedidos con IA. 
+
+**Ubicación en el repositorio:**
+`resources/knowledge\sivia`
+
+## 5. Arquitectura del código
+
+La implementación del chatbot sigue la siguiente estructura dentro del proyecto Laravel:
+
+- `app/Http/Controllers/ChatbotController.php` → lógica del chatbot (recibe la pregunta, construye el contexto y devuelve la respuesta).
+- `app/Services/ChatbotService.php` → servicio de llamada al LLM (Gemini API) y manejo de la base de conocimiento.
+- `config/chatbot.php` → System Prompt, API Key y configuración del modelo.
+- `resources/knowledge/` → base de conocimiento (6 archivos JSON: beneficios, faq, general, limites, modulos, pedidos_inteligentes).
+- `resources/views/widget.blade.php` → interfaz del chat (widget flotante).
+- `routes/web.php` → ruta `/chatbot` (endpoint para enviar mensajes).
 
