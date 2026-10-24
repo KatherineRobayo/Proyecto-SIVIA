@@ -48,6 +48,69 @@ En pocas palabras el chatbot de SIVIA no solo menciona la Declaración de la Per
 la vive en su identidad, en su evolución, en su interfaz y en su ética, y de esta manera, el usuario no lee los 12 principios: 
 los experimenta mientras conoce SIVIA y construye el estilo de su negocio. 
 
+**¿En qué medida el agente de IA/chatbot implementado se ajusta a la «Declaración de la Persona Transhumana» de la Universidad de Cundinamarca y la respalda en lo que respecta a la integración ética de la IA,
+el aumento humano y la transformación educativa?**
+
+El chatbot de SIVIA se ajusta a la «Declaración de la Persona Transhumana» de la Universidad de Cundinamarca en tres dimensiones: la integración ética de la IA, el empoderamiento humano y la transformación educativa.
+
+1. **Integración ética de la IA**.
+SIVIA no utiliza la IA para imponerse, sino para apoyar a los usuarios.
+Reconoce con honestidad sus limitaciones (Principio 10: «Forjo mi identidad») y respeta la autonomía del usuario (Principio 9: «Soy libre, autónomo y responsable»).
+Cuando no puede realizar una tarea —como la contabilidad o la gestión de nóminas—, lo indica claramente, sin disfrazarlo con retórica filosófica, y redirige la conversación.
+Además, protege la información mediante la autenticación basada en roles, el cifrado y la verificación en dos pasos. La ética no es solo retórica: está integrada en el diseño.
+
+2. **Empoderamiento humano**.
+La Declaración habla de la superación personal a través de la tecnología (Principio 7) y de ir más allá de uno mismo (Principio 6).
+SIVIA encarna esto de dos maneras. En primer lugar, el chatbot evoluciona con la conversación: aprende de las preguntas del usuario y adapta sus respuestas.
+En segundo lugar, amplía las capacidades del comerciante: inventario en tiempo real, informes automatizados, facturación electrónica y un asistente de IA que entiende los pedidos por voz.
+La tecnología no sustituye al comerciante, sino que le permite dedicar su tiempo a lo que realmente importa.
+
+3. **Transformación educativa**.
+SIVIA no se limita a responder preguntas: enseña a través de la conversación. Cuando un usuario pregunta por los precios,
+le explica qué incluye cada plan y le anima a tomar una decisión informada.
+Cuando se le pregunta sobre la IA, explica cómo funciona y por qué beneficia a sus clientes.
+Cada interacción enseña algo nuevo. Además, está diseñada para las micro, pequeñas y medianas empresas (MIPYMES)
+de Ubaté —un contexto local con necesidades específicas—, lo que encarna el Principio 8 («Vivo y contribuyo a la paz y la armonía») y
+el Principio 2 («La vida es el gran desafío del siglo XXI»).
+
+**Englis:** 
+
+**How does the agent/chatbot respect and promote the principles of the University of Cundinamarca’s Declaration of the Transhuman Person?**
+SIVIA’s chatbot incorporates the University of Cundinamarca’s Declaration of the Transhuman Person not as an appended text, but as the DNA of its conversational design.
+It does so through five specific mechanisms:
+
+1. **Transhuman identity**.
+SIVIA presents itself as a “digital Transhuman”: a being that learns, evolves, and improves with every conversation.
+This embodies Principle 7 (“I improve myself through technology”) and Principle 10 (“I forge my personality, character, and identity”).
+The chatbot is not a cold robot: it has a name, a human tone, recognizes its limits, and shapes its identity with honesty.
+
+2. **Conversational evolution**.
+SIVIA learns from the user’s questions and adapts its responses.
+After several interactions (questions 3 and 6), it summarizes what it has learned and shares it with the user.
+This reflects Principle 4 (“I determine my life; I learn from it”) and Principle 6 (“I go beyond myself”).
+The learning is mutual, as the user also learns about their own business while conversing.
+
+3. **“Your Business Style” Widget**.
+A visual bar with 12 dots that change color depending on the type of question the user asks.
+Each dot represents a transhuman principle applied to business, not to the individual.
+This allows the user to see, in a visual and interactive way, how their questions reflect ethical principles such as autonomy (principle 9),
+care (principle 5), or the pursuit of peace (principle 8). It displays the business style if the user asks for it.
+
+4.  **Ethics of Honesty.**
+SIVIA acknowledges what it does not do (advanced accounting, payroll, native app) without disguising it as philosophy.
+This embodies Principle 10 (“I forge my identity”) and Principle 11 (“I perform transformative acts of improvement”).
+Honesty builds trust and respects the user’s autonomy.
+
+5. **Contribution to the community.**
+SIVIA is designed for MSMEs in Ubaté, a local context with specific needs.
+By facilitating the digital transformation of small businesses, it contributes to Principle 8 (“I live and contribute so that the community may be at peace and in harmony”)
+and Principle 2 (“Life is the great challenge of the 21st century”). Technology is not imposed; it adapts to the context and to people.
+
+In short, SIVIA’s chatbot does not merely reference the Transhuman Declaration:
+it embodies it in its identity, its evolution, its interface, and its ethics. In this way, users do not simply read the 12 principles:
+they experience them as they get to know SIVIA and shape their business style.
+
+
 **How does the implemented AI agent/chatbot align with and support the Transhuman Person Declaration of Universidad de Cundinamarca regarding ethical AI integration,
 human augmentation, and educational transformation?**
 
@@ -72,7 +135,6 @@ When asked about AI, it explains how it works and why it benefits its customers.
 Every interaction teaches something new. Furthermore, it is designed for the micro, small, and medium-sized enterprises (MSMEs)
 in Ubaté—a local context with specific needs—which embodies Principle 8 (“I live and contribute to peace and harmony”) and
 Principle 2 (“Life is the great challenge of the 21st century”).
-
 
 ## 4. Base de conocimiento
 
