@@ -47,8 +47,16 @@
                           placeholder="Escribe los productos y las cantidades que buscas"
                           @disabled(! $assistantEnabled)
                           class="mt-4 w-full resize-y rounded-xl border border-blue-900/40 bg-neutral-950 px-4 py-3 text-white placeholder:text-neutral-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50">{{ old('request') }}</textarea>
-                <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+                    <button type="button" id="voice-button" @disabled(! $assistantEnabled)
+                            class="flex min-h-20 items-center justify-center gap-3 rounded-2xl border-2 border-blue-400/60 bg-blue-500/15 px-6 py-5 text-xl font-bold text-blue-100 shadow-lg shadow-blue-950/30 transition hover:bg-blue-500/25 disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-56">
+                        <span class="text-3xl" aria-hidden="true">🎤</span>
+                        <span id="voice-button-label">Hablar</span>
+                    </button>
                     <p class="text-xs leading-relaxed text-neutral-500">La propuesta no reserva existencias ni confirma el pedido.</p>
+                </div>
+                <p id="voice-status" class="mt-3 hidden rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-3 text-sm text-neutral-300" role="status" aria-live="polite"></p>
+                <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
                     <button id="assistant-submit" type="submit" @disabled(! $assistantEnabled)
                             class="inline-flex justify-center gap-2 rounded-xl bg-blue-500 px-5 py-3 font-bold text-neutral-950 transition hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-50">
                         <span class="material-symbols-outlined text-lg" aria-hidden="true">auto_awesome</span>
@@ -61,7 +69,10 @@
         @if ($assistantResult)
             <section class="mt-6 rounded-2xl border border-blue-500/25 bg-neutral-900/90 p-5 sm:p-7" aria-live="polite">
                 <h2 class="font-serif text-xl font-bold">Esto entendí</h2>
-                <p class="mt-3 leading-relaxed text-neutral-300">{{ $assistantResult['message'] }}</p>
+                <p class="mt-3 leading-relaxed text-neutral-300" data-assistant-message>{{ $assistantResult['message'] }}</p>
+                <button type="button" id="speak-summary" class="mt-4 rounded-xl border border-blue-500/30 px-4 py-2.5 text-sm font-semibold text-blue-200 transition hover:bg-blue-500/10">
+                    🔊 Escuchar resumen
+                </button>
 
                 @if (! empty($assistantResult['clarification']))
                     <p class="mt-4 rounded-xl border border-amber-400/20 bg-amber-400/5 px-4 py-3 text-sm text-amber-100">
@@ -72,7 +83,7 @@
                 @if (! empty($assistantResult['items']))
                     <ul class="mt-5 divide-y divide-neutral-800 rounded-xl border border-neutral-800">
                         @foreach ($assistantResult['items'] as $item)
-                            <li class="flex flex-wrap items-center justify-between gap-3 p-4">
+                            <li class="flex flex-wrap items-center justify-between gap-3 p-4" data-assistant-item="{{ $item['quantity'] }} {{ $item['name'] }}">
                                 <div>
                                     <p class="font-semibold text-white">{{ $item['name'] }}</p>
                                     <p class="mt-1 text-sm text-neutral-400">
@@ -144,10 +155,103 @@
     </div>
 </main>
 <script>
-    document.getElementById('assistant-form')?.addEventListener('submit', () => {
-        const button = document.getElementById('assistant-submit');
-        button.disabled = true;
-        button.textContent = 'Interpretando solicitud…';
+    const assistantForm = document.getElementById('assistant-form');
+    const assistantTextarea = document.getElementById('assistant-request');
+    const assistantButton = document.getElementById('assistant-submit');
+    const voiceButton = document.getElementById('voice-button');
+    const voiceButtonLabel = document.getElementById('voice-button-label');
+    const voiceStatus = document.getElementById('voice-status');
+    const showVoiceStatus = (message) => {
+        voiceStatus.textContent = message;
+        voiceStatus.classList.remove('hidden');
+    };
+
+    assistantForm?.addEventListener('submit', () => {
+        assistantButton.disabled = true;
+        assistantButton.textContent = 'Interpretando solicitud…';
+    });
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (voiceButton && ! SpeechRecognition) {
+        voiceButton.disabled = true;
+        showVoiceStatus('Este navegador no permite dictar pedidos. Puedes escribir tu solicitud en el cuadro de texto.');
+    }
+
+    voiceButton?.addEventListener('click', () => {
+        if (! SpeechRecognition) {
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'es-CO';
+        recognition.interimResults = true;
+        recognition.continuous = false;
+
+        voiceButton.disabled = true;
+        voiceButtonLabel.textContent = 'Te escuchamos…';
+        showVoiceStatus('Habla ahora. Cuando termines, podrás revisar el texto antes de enviarlo.');
+
+        let finalTranscript = '';
+        let receivedTranscript = false;
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            for (let index = event.resultIndex; index < event.results.length; index += 1) {
+                const transcript = event.results[index][0].transcript;
+                if (event.results[index].isFinal) {
+                    finalTranscript += transcript;
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+
+            assistantTextarea.value = `${finalTranscript}${interimTranscript}`.trim();
+            receivedTranscript = finalTranscript.trim() !== '';
+        };
+
+        recognition.onerror = (event) => {
+            const message = event.error === 'not-allowed' || event.error === 'service-not-allowed'
+                ? 'No se concedió permiso para usar el micrófono. Puedes escribir tu solicitud.'
+                : 'No pudimos reconocer la voz. Inténtalo otra vez o escribe tu solicitud.';
+            showVoiceStatus(message);
+        };
+
+        recognition.onend = () => {
+            voiceButton.disabled = false;
+            voiceButtonLabel.textContent = 'Hablar';
+            if (receivedTranscript && assistantTextarea.value.trim() !== '') {
+                showVoiceStatus('Texto transcrito. Revísalo y pulsa «Interpretar solicitud» cuando esté listo.');
+                assistantTextarea.focus();
+            }
+        };
+
+        try {
+            recognition.start();
+        } catch {
+            voiceButton.disabled = false;
+            voiceButtonLabel.textContent = 'Hablar';
+            showVoiceStatus('No se pudo iniciar el micrófono. Puedes escribir tu solicitud.');
+        }
+    });
+
+    document.getElementById('speak-summary')?.addEventListener('click', () => {
+        if (! ('speechSynthesis' in window)) {
+            showVoiceStatus('Este navegador no permite leer el resumen en voz alta.');
+            return;
+        }
+
+        const itemLines = [...document.querySelectorAll('[data-assistant-item]')]
+            .map((item) => item.dataset.assistantItem)
+            .filter(Boolean);
+        const summary = itemLines.length > 0
+            ? `Entendí que quieres: ${itemLines.join('. ')}.`
+            : document.querySelector('[data-assistant-message]')?.textContent.trim();
+
+        if (summary) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(summary);
+            utterance.lang = 'es-CO';
+            window.speechSynthesis.speak(utterance);
+        }
     });
 </script>
 @endsection

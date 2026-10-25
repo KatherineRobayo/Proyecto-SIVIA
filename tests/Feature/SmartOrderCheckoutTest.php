@@ -49,6 +49,76 @@ class SmartOrderCheckoutTest extends TestCase
         $this->assertSame($business->id, session('smart_order.empresa_id'));
     }
 
+    public function test_json_quantity_updates_return_server_summary_and_preserve_stock_validation(): void
+    {
+        $business = $this->business();
+        $product = $this->product($business, 'Café', 10, 3);
+        $this->withSession([
+            'smart_order.empresa_id' => $business->id,
+            'smart_order.cart' => [(string) $product->id => 2],
+        ])->withHeader('Accept', 'application/json');
+
+        $this->put(route('smart.order.cart.update', $product->id), ['quantity' => 3])
+            ->assertOk()
+            ->assertJsonPath('quantity', 3)
+            ->assertJsonPath('total', '30,00')
+            ->assertJsonPath('subtotal', '25,21')
+            ->assertJsonPath('items.'.$product->id.'.quantity', 3);
+
+        $this->put(route('smart.order.cart.update', $product->id), ['quantity' => 4])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('quantity');
+        $this->assertSame(3, session('smart_order.cart')[(string) $product->id]);
+
+        $this->put(route('smart.order.cart.update', $product->id), ['quantity' => 2])
+            ->assertOk()
+            ->assertJsonPath('quantity', 2)
+            ->assertJsonPath('total', '20,00');
+
+        $this->put(route('smart.order.cart.update', $product->id), ['quantity' => 1])
+            ->assertOk()
+            ->assertJsonPath('quantity', 1)
+            ->assertJsonPath('total', '10,00');
+
+        $this->delete(route('smart.order.cart.remove', $product->id))
+            ->assertOk()
+            ->assertJsonPath('quantity', 0)
+            ->assertJsonPath('total', '0,00')
+            ->assertJsonPath('items', []);
+        $this->assertEmpty(session('smart_order.cart'));
+
+        $this->put(route('smart.order.cart.update', $product->id), ['quantity' => 1])
+            ->assertNotFound()
+            ->assertJsonPath('message', 'Ese producto ya no forma parte de Tu Pedido.');
+    }
+
+    public function test_json_add_to_cart_returns_summary_and_handles_missing_business_as_json(): void
+    {
+        $business = $this->business();
+        $product = $this->product($business, 'Té', 5, 2);
+
+        $this->withHeader('Accept', 'application/json')
+            ->post(route('smart.order.cart.add'), ['product_id' => $product->id, 'quantity' => 1])
+            ->assertStatus(409)
+            ->assertJsonPath('message', 'Selecciona un negocio antes de agregar productos.');
+
+        $this->withSession([
+            'smart_order.empresa_id' => $business->id,
+            'smart_order.cart' => [],
+        ])->withHeader('Accept', 'application/json')
+            ->post(route('smart.order.cart.add'), ['product_id' => $product->id, 'quantity' => 1])
+            ->assertOk()
+            ->assertJsonPath('quantity', 1)
+            ->assertJsonPath('total', '5,00')
+            ->assertJsonPath('items.'.$product->id.'.quantity', 1)
+            ->assertJsonPath('items.'.$product->id.'.productName', 'Té');
+
+        $this->post(route('smart.order.cart.add'), ['product_id' => $product->id, 'quantity' => 2])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('quantity');
+        $this->assertSame(1, session('smart_order.cart')[(string) $product->id]);
+    }
+
     public function test_cart_rejects_products_from_another_business_and_invalid_quantities(): void
     {
         $businessA = $this->business('A');
@@ -85,12 +155,12 @@ class SmartOrderCheckoutTest extends TestCase
             ->assertOk()
             ->assertSee('Producto real')
             ->assertSee('$39,90')
-            ->assertSee('Confirmar pedido');
+            ->assertSee('Continuar al pago simulado');
 
         $token = session('smart_order.confirmation_token');
         $payload = ['confirmation_token' => $token, 'price' => 0.01, 'total' => 0.02];
         $this->post(route('smart.order.confirm'), $payload)
-            ->assertRedirect(route('smart.order.confirmed'))
+            ->assertRedirect(route('smart.order.payment'))
             ->assertSessionHas('smart_order.receipt');
 
         $order = Pedido::query()->sole();
@@ -117,10 +187,27 @@ class SmartOrderCheckoutTest extends TestCase
         ]);
 
         $this->post(route('smart.order.confirm'), $payload)
-            ->assertRedirect(route('smart.order.confirmed'));
+            ->assertRedirect(route('smart.order.payment'));
         $this->assertSame(1, Pedido::count());
         $this->assertSame(1, Movimiento::where('producto_id', $product->id)->count());
         $this->assertSame(6, $product->fresh()->stock);
+
+        $this->get(route('smart.order.confirmed'))
+            ->assertRedirect(route('smart.order.payment'));
+        $this->post(route('smart.order.pay'), ['payment_method' => 'bitcoin'])
+            ->assertSessionHasErrors('payment_method');
+        $this->assertFalse($order->fresh()->pagado);
+
+        $this->get(route('smart.order.payment'))->assertOk()->assertSee('Pago simulado');
+        $this->post(route('smart.order.pay'), ['payment_method' => 'nequi'])
+            ->assertRedirect(route('smart.order.confirmed'));
+        $this->assertTrue($order->fresh()->pagado);
+        $this->assertSame('nequi', $order->fresh()->metodo_pago);
+        $this->post(route('smart.order.pay'), ['payment_method' => 'tarjeta'])
+            ->assertRedirect(route('smart.order.confirmed'));
+        $this->assertSame(1, Pedido::count());
+        $this->assertSame('nequi', $order->fresh()->metodo_pago);
+
         $this->get(route('smart.order.confirmed'))
             ->assertOk()
             ->assertSee($order->numero_pedido);
@@ -157,7 +244,7 @@ class SmartOrderCheckoutTest extends TestCase
         $token = session('smart_order.confirmation_token');
 
         $this->post(route('smart.order.confirm'), ['confirmation_token' => $token])
-            ->assertRedirect(route('smart.order.confirmed'));
+            ->assertRedirect(route('smart.order.payment'));
 
         $order = Pedido::query()->sole();
         $this->assertNull($order->cliente_id);

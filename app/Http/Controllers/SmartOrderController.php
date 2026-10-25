@@ -9,6 +9,7 @@ use App\Models\Pedido;
 use App\Models\Producto;
 use App\Models\User;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,7 @@ class SmartOrderController extends Controller
     private const CART_SESSION_KEY = 'smart_order.cart';
     private const TOKEN_SESSION_KEY = 'smart_order.confirmation_token';
     private const RECEIPT_SESSION_KEY = 'smart_order.receipt';
+    private const PAYMENT_METHODS = ['tarjeta', 'nequi', 'daviplata'];
 
     public function index(Request $request): View
     {
@@ -158,11 +160,15 @@ class SmartOrderController extends Controller
         ]);
     }
 
-    public function addToCart(Request $request): RedirectResponse
+    public function addToCart(Request $request): JsonResponse|RedirectResponse
     {
         $business = $this->selectedBusiness($request);
 
         if (! $business) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Selecciona un negocio antes de agregar productos.'], 409);
+            }
+
             return $this->businessSelectionRedirect();
         }
 
@@ -179,7 +185,14 @@ class SmartOrderController extends Controller
 
         $product = $business->productos()
             ->where('productos.estado', 'activo')
-            ->findOrFail($validated['product_id']);
+            ->find($validated['product_id']);
+        if (! $product) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Ese producto ya no está disponible.'], 404);
+            }
+
+            abort(404);
+        }
         $cart = $this->sessionCart($request);
         $key = (string) $product->id;
         $quantity = (int) ($cart[$key] ?? 0) + (int) $validated['quantity'];
@@ -195,6 +208,10 @@ class SmartOrderController extends Controller
         $cart[$key] = $quantity;
         $request->session()->put(self::CART_SESSION_KEY, $cart);
         $request->session()->forget(self::TOKEN_SESSION_KEY);
+
+        if ($request->expectsJson()) {
+            return $this->cartMutationResponse($request, $business, "{$product->nombre} se añadió a Tu Pedido.");
+        }
 
         return redirect()
             ->route('smart.order.catalog')
@@ -215,11 +232,15 @@ class SmartOrderController extends Controller
         ]);
     }
 
-    public function updateCartItem(Request $request, int $producto): RedirectResponse
+    public function updateCartItem(Request $request, int $producto): JsonResponse|RedirectResponse
     {
         $business = $this->selectedBusiness($request);
 
         if (! $business) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Selecciona un negocio antes de actualizar el pedido.'], 409);
+            }
+
             return $this->businessSelectionRedirect();
         }
 
@@ -228,13 +249,24 @@ class SmartOrderController extends Controller
         ]);
         $cart = $this->sessionCart($request);
         if (! array_key_exists((string) $producto, $cart)) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Ese producto ya no forma parte de Tu Pedido.'], 404);
+            }
+
             return redirect()->route('smart.order.cart')
                 ->with('order_error', 'Ese producto no forma parte de Tu Pedido.');
         }
 
         $product = $business->productos()
             ->where('productos.estado', 'activo')
-            ->findOrFail($producto);
+            ->find($producto);
+        if (! $product) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Ese producto ya no está disponible.'], 404);
+            }
+
+            abort(404);
+        }
         $quantity = (int) $validated['quantity'];
 
         if ($quantity > $product->stock) {
@@ -247,12 +279,22 @@ class SmartOrderController extends Controller
         $request->session()->put(self::CART_SESSION_KEY, $cart);
         $request->session()->forget(self::TOKEN_SESSION_KEY);
 
+        if ($request->expectsJson()) {
+            return $this->cartMutationResponse($request, $business, 'La cantidad del pedido se actualizó.');
+        }
+
         return redirect()->route('smart.order.cart')->with('success', 'La cantidad del pedido se actualizó.');
     }
 
-    public function removeFromCart(Request $request, int $producto): RedirectResponse
+    public function removeFromCart(Request $request, int $producto): JsonResponse|RedirectResponse
     {
-        if (! $this->selectedBusiness($request)) {
+        $business = $this->selectedBusiness($request);
+
+        if (! $business) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Selecciona un negocio antes de actualizar el pedido.'], 409);
+            }
+
             return $this->businessSelectionRedirect();
         }
 
@@ -260,6 +302,10 @@ class SmartOrderController extends Controller
         unset($cart[(string) $producto]);
         $request->session()->put(self::CART_SESSION_KEY, $cart);
         $request->session()->forget(self::TOKEN_SESSION_KEY);
+
+        if ($request->expectsJson()) {
+            return $this->cartMutationResponse($request, $business, 'Producto eliminado de Tu Pedido.');
+        }
 
         return redirect()->route('smart.order.cart')->with('success', 'Producto eliminado de Tu Pedido.');
     }
@@ -319,7 +365,7 @@ class SmartOrderController extends Controller
         $receipt = $request->session()->get(self::RECEIPT_SESSION_KEY, []);
 
         if (is_array($receipt) && ($receipt['token'] ?? null) === $token) {
-            return redirect()->route('smart.order.confirmed');
+            return redirect()->route('smart.order.payment');
         }
 
         if (! is_string($expectedToken) || ! hash_equals($expectedToken, $token)) {
@@ -327,11 +373,11 @@ class SmartOrderController extends Controller
                 ->with('order_error', 'La confirmación expiró. Revisa nuevamente Tu Pedido.');
         }
 
-        if (! Schema::hasColumn('pedidos', 'smart_order_token')) {
-            Log::error('No está aplicada la migración de idempotencia de SmartOrder.');
+        if (! Schema::hasColumn('pedidos', 'smart_order_token') || ! Schema::hasColumn('pedidos', 'pagado')) {
+            Log::error('Faltan migraciones requeridas para la confirmación y pago simulado de SmartOrder.');
 
             return redirect()->route('smart.order.review')
-                ->with('order_error', 'No se puede confirmar todavía. El sistema requiere una actualización de base de datos.');
+                ->with('order_error', 'No se puede procesar el pedido todavía. El sistema requiere una actualización de base de datos.');
         }
 
         $cart = $this->sessionCart($request);
@@ -467,31 +513,128 @@ class SmartOrderController extends Controller
 
         $this->storeReceipt($request, $order);
 
+        return redirect()->route('smart.order.payment');
+    }
+
+    public function payment(Request $request): View|RedirectResponse
+    {
+        $order = $this->receiptOrder($request);
+        if (! $order) {
+            return redirect()->route('smart.order.review')
+                ->with('order_error', 'No hay un pedido pendiente de pago. Revisa Tu Pedido antes de continuar.');
+        }
+
+        if (! Schema::hasColumn('pedidos', 'pagado')) {
+            Log::error('No está aplicada la migración de pago simulado de SmartOrder.', [
+                'empresa_id' => $order->empresa_id,
+            ]);
+
+            return redirect()->route('smart.order.review')
+                ->with('order_error', 'El sistema requiere una actualización de base de datos antes de procesar el pago simulado.');
+        }
+
+        if ($order->pagado) {
+            return redirect()->route('smart.order.confirmed');
+        }
+
+        return view('smart-order-payment', [
+            'order' => $order,
+        ]);
+    }
+
+    public function pay(Request $request): RedirectResponse
+    {
+        $actor = $request->user();
+        if ($actor && ($actor->role !== User::ROLE_CUSTOMER || ! $actor->activo)) {
+            abort(403, 'Esta cuenta no puede pagar pedidos de cliente.');
+        }
+
+        $validated = $request->validate([
+            'payment_method' => ['required', Rule::in(self::PAYMENT_METHODS)],
+        ]);
+        $order = $this->receiptOrder($request);
+        if (! $order) {
+            return redirect()->route('smart.order.review')
+                ->with('order_error', 'No encontramos el pedido que intentas pagar. Revisa Tu Pedido nuevamente.');
+        }
+
+        if (! Schema::hasColumn('pedidos', 'pagado')) {
+            Log::error('No está aplicada la migración de pago simulado de SmartOrder.', [
+                'empresa_id' => $order->empresa_id,
+            ]);
+
+            return redirect()->route('smart.order.payment')
+                ->with('payment_error', 'El pago simulado no está disponible hasta actualizar la base de datos.');
+        }
+
+        try {
+            DB::transaction(function () use ($order, $validated): void {
+                $lockedOrder = Pedido::query()
+                    ->whereKey($order->id)
+                    ->where('smart_order_token', $order->smart_order_token)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                if (! $lockedOrder->pagado) {
+                    $lockedOrder->update([
+                        'pagado' => true,
+                        'metodo_pago' => $validated['payment_method'],
+                    ]);
+                }
+            });
+        } catch (QueryException $exception) {
+            Log::error('Falló el pago simulado del pedido SmartOrder.', [
+                'empresa_id' => $order->empresa_id,
+                'pedido_id' => $order->id,
+                'exception' => $exception,
+            ]);
+
+            return redirect()->route('smart.order.payment')
+                ->with('payment_error', 'No fue posible registrar el pago simulado. Inténtalo de nuevo.');
+        }
+
         return redirect()->route('smart.order.confirmed');
     }
 
     public function confirmed(Request $request): View|RedirectResponse
     {
-        $receipt = $request->session()->get(self::RECEIPT_SESSION_KEY);
-        if (! is_array($receipt) || empty($receipt['id']) || empty($receipt['token'])) {
+        $order = $this->receiptOrder($request);
+        if (! $order) {
             return redirect()->route('smart.order.catalog')
                 ->with('order_error', 'No hay una confirmación reciente para mostrar.');
         }
 
-        $order = Pedido::query()
-            ->whereKey($receipt['id'])
-            ->where('smart_order_token', $receipt['token'])
-            ->with(['empresa', 'detalles.producto'])
-            ->first();
+        if (! Schema::hasColumn('pedidos', 'pagado')) {
+            return redirect()->route('smart.order.review')
+                ->with('order_error', 'El sistema requiere una actualización de base de datos para consultar el pago.');
+        }
 
-        if (! $order) {
-            $request->session()->forget(self::RECEIPT_SESSION_KEY);
-
-            return redirect()->route('smart.order.catalog')
-                ->with('order_error', 'No encontramos el pedido confirmado. Contacta al negocio si el problema continúa.');
+        if (! $order->pagado) {
+            return redirect()->route('smart.order.payment')
+                ->with('order_error', 'Completa el pago simulado para finalizar el pedido.');
         }
 
         return view('smart-order-confirmed', compact('order'));
+    }
+
+    private function receiptOrder(Request $request): ?Pedido
+    {
+        $receipt = $request->session()->get(self::RECEIPT_SESSION_KEY);
+        if (! is_array($receipt)
+            || empty($receipt['id'])
+            || empty($receipt['token'])
+            || ! is_numeric($request->session()->get(self::BUSINESS_SESSION_KEY))) {
+            return null;
+        }
+
+        $businessId = (int) $request->session()->get(self::BUSINESS_SESSION_KEY);
+
+        return Pedido::query()
+            ->whereKey($receipt['id'])
+            ->where('empresa_id', $businessId)
+            ->where('smart_order_token', $receipt['token'])
+            ->with(['empresa', 'detalles.producto'])
+            ->first();
     }
 
     private function selectedBusiness(Request $request): ?Empresa
@@ -583,6 +726,37 @@ class SmartOrderController extends Controller
             'hasIssues' => $hasIssues,
             'quantity' => array_sum($cart),
         ];
+    }
+
+    private function cartMutationResponse(Request $request, Empresa $business, string $message): JsonResponse
+    {
+        $summary = $this->cartSummary($request, $business);
+        $subtotal = $summary['total'] / 1.19;
+        $tax = $summary['total'] - $subtotal;
+
+        return response()->json([
+            'message' => $message,
+            'quantity' => $summary['quantity'],
+            'hasIssues' => $summary['hasIssues'],
+            'total' => number_format($summary['total'], 2, ',', '.'),
+            'subtotal' => number_format($subtotal, 2, ',', '.'),
+            'tax' => number_format($tax, 2, ',', '.'),
+            'items' => $summary['items']->mapWithKeys(static function (array $item): array {
+                return [
+                    $item['productId'] => [
+                        'quantity' => $item['quantity'],
+                        'stock' => $item['product'] ? (int) $item['product']->stock : 0,
+                        'unitPrice' => number_format($item['unitPrice'], 2, ',', '.'),
+                        'catalogPrice' => number_format($item['unitPrice'], 0, ',', '.'),
+                        'productName' => $item['product']?->nombre ?? 'Producto no disponible',
+                        'active' => $item['product']?->estado === 'activo',
+                        'updateUrl' => route('smart.order.cart.update', $item['productId']),
+                        'removeUrl' => route('smart.order.cart.remove', $item['productId']),
+                        'available' => $item['available'],
+                    ],
+                ];
+            }),
+        ]);
     }
 
     private function forgetOrderState(Request $request): void

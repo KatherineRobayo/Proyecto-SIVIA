@@ -114,10 +114,10 @@
                         <span class="text-blue-300">${{ number_format($cartSummary['total'], 2, ',', '.') }}</span>
                     </div>
                     @if ($cartSummary['hasIssues'])
-                        <p class="mt-4 text-sm text-amber-200">Corrige los productos marcados antes de revisar el pedido.</p>
+                        <p class="mt-4 text-sm text-amber-200">Corrige los productos marcados antes de confirmar.</p>
                     @else
-                        <a href="{{ route('smart.order.review') }}" class="mt-5 flex justify-center rounded-xl bg-blue-500 px-4 py-3 text-center font-bold text-neutral-950 transition hover:bg-blue-400">
-                            Revisar pedido
+                        <a href="{{ route('smart.order.catalog') }}" class="mt-5 flex justify-center rounded-xl bg-blue-500 px-4 py-3 text-center font-bold text-neutral-950 transition hover:bg-blue-400">
+                            Confirmar en el catálogo
                         </a>
                     @endif
                 </aside>

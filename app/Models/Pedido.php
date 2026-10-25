@@ -25,6 +25,7 @@ class Pedido extends Model
         'fecha_entrega_real',
         'stock_reserved',
         'smart_order_token',
+        'pagado',
     ];
 
     protected $casts = [
@@ -32,6 +33,7 @@ class Pedido extends Model
         'fecha_entrega_esperada' => 'datetime',
         'fecha_entrega_real' => 'datetime',
         'stock_reserved' => 'boolean',
+        'pagado' => 'boolean',
     ];
 
     /**

@@ -43,6 +43,10 @@ Route::get('/pedido-inteligente/revisar', [SmartOrderController::class, 'review'
     ->name('smart.order.review');
 Route::post('/pedido-inteligente/confirmar', [SmartOrderController::class, 'confirm'])
     ->name('smart.order.confirm');
+Route::get('/pedido-inteligente/pago', [SmartOrderController::class, 'payment'])
+    ->name('smart.order.payment');
+Route::post('/pedido-inteligente/pago', [SmartOrderController::class, 'pay'])
+    ->name('smart.order.pay');
 Route::get('/pedido-inteligente/confirmado', [SmartOrderController::class, 'confirmed'])
     ->name('smart.order.confirmed');
 Route::get('/pedido-inteligente/asistente', [SmartOrderAssistantController::class, 'index'])
