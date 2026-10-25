@@ -50,8 +50,8 @@
                     de Gestión Integral.
                 </h2>
                 <p class="text-neutral-300 text-lg max-w-md">
-                    Registra a tu personal y dale acceso al sistema de gestión
-                    más preciso del sector.
+                    Crea una cuenta de cliente para realizar pedidos a las empresas
+                    registradas en SIVIA.
                 </p>
             </div>
             <div class="grid grid-cols-2 gap-4">
@@ -67,13 +67,13 @@
                 </div>
             </div>
 
-            {{-- Link de vuelta al dashboard --}}
+            {{-- Link de acceso --}}
             <div>
-                <a href="{{ route('dashboard') }}"
+                <a href="{{ route('login') }}"
                    class="inline-flex items-center gap-2 text-sm text-blue-500/70
                           hover:text-blue-400 transition-colors font-serif">
                     <span class="material-symbols-outlined text-sm">arrow_back</span>
-                    Volver al Dashboard
+                    Volver al inicio de sesión
                 </a>
             </div>
         </section>
@@ -92,11 +92,11 @@
                 <header class="mb-10 text-center">
                     <h2 class="text-2xl font-headline font-bold text-white
                                tracking-widest uppercase">
-                        Registrar Personal
+                        Crear cuenta de cliente
                     </h2>
                     <div class="w-12 h-px bg-blue-500 mx-auto mt-2"></div>
                     <p class="text-xs text-neutral-500 mt-3 italic">
-                        Acceso restringido — solo administradores
+                        El registro público crea cuentas sin permisos administrativos
                     </p>
                 </header>
 
@@ -181,46 +181,6 @@
                         @enderror
                     </div>
 
-                    {{-- Rol operacional --}}
-                    <div class="space-y-2">
-                        <label for="role"
-                               class="block text-sm font-bold text-blue-400/80
-                                      tracking-wide uppercase">
-                            Rol en el sistema
-                        </label>
-                        <div class="relative group">
-                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2
-                                         text-neutral-500 group-focus-within:text-blue-500 transition-colors">
-                                assignment_ind
-                            </span>
-                            <select id="role"
-                                    name="role"
-                                    required
-                                    class="w-full bg-neutral-800 text-white
-                                           pl-12 pr-10 py-4 rounded-lg outline-none
-                                           border {{ $errors->has('role') ? 'border-error/60' : 'border-blue-900/20' }}
-                                           focus:ring-1 focus:ring-blue-500 focus:border-blue-500
-                                           transition-all appearance-none cursor-pointer">
-                                <option value="" disabled {{ old('role') ? '' : 'selected' }}>
-                                    Selecciona un rol
-                                </option>
-                                {{-- Roles del sistema: admin gestiona todo, almacenista acceso restringido --}}
-                                <option value="admin"       {{ old('role') === 'admin'       ? 'selected' : '' }}>
-                                    Administrador
-                                </option>
-                                <option value="almacenista" {{ old('role') === 'almacenista' ? 'selected' : '' }}>
-                                    Almacenista
-                                </option>
-                            </select>
-                            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2
-                                         text-neutral-500 pointer-events-none">
-                                expand_more
-                            </span>
-                        </div>
-                        @error('role')
-                            <p class="text-xs text-error mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
                     {{-- Contraseña --}}
                     <div class="space-y-2">
                         <label for="password"
@@ -341,4 +301,3 @@
     })();
 </script>
 @endpush
-

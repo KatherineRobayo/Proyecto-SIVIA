@@ -48,9 +48,11 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        abort_unless(! $user->isAdminGlobal(), 403, 'La cuenta global no se puede desactivar desde el perfil.');
+
         Auth::logout();
 
-        $user->delete();
+        $user->update(['activo' => false]);
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

@@ -247,14 +247,14 @@
                     </li>
                 @endif
 
-                {{-- CAJA --}}
-                @if($ingresos > $egresos)
+                {{-- VENTAS --}}
+                @if($ingresos > 0)
                     <li class="flex items-center gap-2 text-emerald-400">
-                        <span class="material-symbols-outlined text-blue-400 text-sm">payments</span>Flujo de caja positivo
+                        <span class="material-symbols-outlined text-blue-400 text-sm">payments</span>Ventas registradas hoy: ${{ number_format($ingresos, 2) }}
                     </li>
                 @else
                     <li class="flex items-center gap-2 text-red-400">
-                        <span class="material-symbols-outlined text-blue-400 text-sm">money_off</span> Más egresos que ingresos
+                        <span class="material-symbols-outlined text-blue-400 text-sm">money_off</span>Sin ventas registradas hoy
                     </li>
                 @endif
 
@@ -285,10 +285,6 @@
 
                 @if($salidas > $entradas)
                     <li>• Evaluar aumento de stock</li>
-                @endif
-
-                @if($ingresos < $egresos)
-                    <li>• Reducir gastos operativos</li>
                 @endif
 
                 <li>• Revisar reportes para decisiones</li>

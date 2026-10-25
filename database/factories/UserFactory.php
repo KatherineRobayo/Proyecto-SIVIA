@@ -20,8 +20,11 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => 'Administrador',
-            'email' => 'admin@admin.com', // Usuario fijo para que puedas entrar
+            'name' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
+            'role' => User::ROLE_CUSTOMER,
+            'empresa_id' => null,
+            'activo' => true,
             'email_verified_at' => now(),
             'password' => Hash::make('password'), // Contraseña: password
             'remember_token' => Str::random(10),

@@ -51,6 +51,18 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label" for="cliente_id">Cliente (opcional)</label>
+                    <select class="form-control" id="cliente_id" name="cliente_id">
+                        <option value="">Sin cliente asociado</option>
+                        @foreach ($clientes as $cliente)
+                            <option value="{{ $cliente->id }}" {{ old('cliente_id') == $cliente->id ? 'selected' : '' }}>
+                                {{ $cliente->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label">Descripción</label>
                     <textarea name="descripcion" class="form-control @error('descripcion') is-invalid @enderror" rows="3">{{ old('descripcion') }}</textarea>
                     @error('descripcion')
@@ -87,7 +99,7 @@
 
                             <div class="col-md-2">
                                 <label class="form-label">Precio</label>
-                                <input type="number" name="productos[0][precio]" class="form-control precio-input @error('productos.0.precio') is-invalid @enderror" step="0.01" min="0" value="{{ old('productos.0.precio', 0) }}" required>
+                                <input type="number" name="productos[0][precio]" class="form-control precio-input @error('productos.0.precio') is-invalid @enderror" step="0.01" min="0" value="0" readonly required>
                             </div>
 
                             <div class="col-md-2">

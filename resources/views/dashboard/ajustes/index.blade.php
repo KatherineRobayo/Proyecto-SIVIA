@@ -127,7 +127,7 @@
 
                 </div>
 
-                {{-- CREAR --}}
+                @if(auth()->user()->isAdminGlobal())
                 <form action="{{ route('ajustes.empresa.store') }}" method="POST" class="grid md:grid-cols-2 gap-4 mb-6">
                     @csrf
 
@@ -150,6 +150,7 @@
                         Crear Empresa
                     </button>
                 </form>
+                @endif
 
 
                 {{-- LISTADO --}}
@@ -162,17 +163,28 @@
                         <div>
                             <p class="text-white font-semibold">{{ $empresa->nombre }}</p>
                             <p class="text-neutral-400 text-sm">{{ $empresa->nit }}</p>
+                            @if(auth()->user()->isAdminGlobal())
+                                <form action="{{ route('ajustes.empresa.update', $empresa) }}" method="POST" class="mt-3 flex flex-wrap gap-2">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="text" name="nombre" value="{{ $empresa->nombre }}" required
+                                           class="rounded-lg border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white">
+                                    <input type="text" name="nit" value="{{ $empresa->nit }}"
+                                           class="rounded-lg border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white">
+                                    <input type="text" name="telefono" value="{{ $empresa->telefono }}"
+                                           class="rounded-lg border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white">
+                                    <input type="email" name="email" value="{{ $empresa->email }}"
+                                           class="rounded-lg border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white">
+                                    <input type="text" name="direccion" value="{{ $empresa->direccion }}"
+                                           class="rounded-lg border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white">
+                                    <button class="rounded-lg border border-blue-500/40 px-3 py-2 text-sm text-blue-300">Guardar empresa</button>
+                                </form>
+                            @endif
                         </div>
 
-                        <form action="{{ route('ajustes.empresa.destroy',$empresa) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-
-                            <button onclick="return confirm('Eliminar empresa?')"
-                                class="text-red-400 hover:text-red-300">
-                                <span class="material-symbols-outlined">delete</span>
-                            </button>
-                        </form>
+                        @if(auth()->user()->isAdminGlobal())
+                            <span class="text-xs text-neutral-500">La empresa conserva sus registros históricos</span>
+                        @endif
 
                     </div>
 
@@ -208,21 +220,22 @@
 
                     <select name="role"
                         class="bg-neutral-900 border border-neutral-700 rounded-xl px-4 py-3 text-white">
-                        <option value="admin">Admin</option>
-                        <option value="almacenista">Almacenista</option>
+                        @if(auth()->user()->isAdminGlobal())
+                            <option value="admin_empresa">Administrador de empresa</option>
+                        @else
+                            <option value="empleado">Empleado</option>
+                        @endif
                     </select>
 
-                    <select name="empresa_id"
-                        class="bg-neutral-900 border border-neutral-700 rounded-xl px-4 py-3 text-white md:col-span-2">
-                        <option value="">Sin empresa</option>
-
-                        @foreach($empresas as $empresa)
-                            <option value="{{ $empresa->id }}">
-                                {{ $empresa->nombre }}
-                            </option>
-                        @endforeach
-
-                    </select>
+                    @if(auth()->user()->isAdminGlobal())
+                        <select name="empresa_id" required
+                            class="bg-neutral-900 border border-neutral-700 rounded-xl px-4 py-3 text-white md:col-span-2">
+                            <option value="">Selecciona una empresa</option>
+                            @foreach($empresas as $empresa)
+                                <option value="{{ $empresa->id }}">{{ $empresa->nombre }}</option>
+                            @endforeach
+                        </select>
+                    @endif
 
                     <button class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 md:col-span-2">
                         Crear Usuario
@@ -242,17 +255,20 @@
                             <p class="text-white font-semibold">{{ $user->name }}</p>
                             <p class="text-neutral-400 text-sm">{{ $user->email }}</p>
                             <p class="text-blue-400 text-xs mt-1">{{ $user->role }}</p>
+                            <p class="text-xs mt-1 {{ $user->activo ? 'text-green-400' : 'text-neutral-500' }}">
+                                {{ $user->activo ? 'Activo' : 'Desactivado' }}
+                            </p>
                         </div>
 
-                        @if(auth()->id() != $user->id)
+                        @if(auth()->id() != $user->id && $user->activo)
 
                         <form action="{{ route('ajustes.usuario.destroy',$user) }}" method="POST">
                             @csrf
                             @method('DELETE')
 
-                            <button onclick="return confirm('Eliminar usuario?')"
+                            <button onclick="return confirm('¿Desactivar este usuario? Se conservará su historial.')"
                                 class="text-red-400 hover:text-red-300">
-                                <span class="material-symbols-outlined">delete</span>
+                                <span class="material-symbols-outlined">person_off</span>
                             </button>
                         </form>
 

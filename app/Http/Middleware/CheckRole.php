@@ -11,12 +11,14 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Protege rutas según el rol del usuario autenticado.
  * Uso en rutas:
- *   ->middleware('role:admin')            — solo administradores
- *   ->middleware('role:admin,almacenista') — admin O almacenista
+ *   ->middleware('role:admin_global')               — administrador global
+ *   ->middleware('role:admin_empresa,empleado')    — operación de empresa
  *
  * Roles del sistema:
- *   admin       → acceso total (inventario, caja, reportes, registrar usuarios)
- *   almacenista → acceso restringido (inventario, pedidos, recibos — sin caja ni reportes)
+ *   admin_global  → administración global
+ *   admin_empresa → administración de su empresa
+ *   empleado      → acceso operativo de su empresa
+ *   cliente       → acceso a sus propios pedidos
  */
 class CheckRole
 {
@@ -34,6 +36,10 @@ class CheckRole
             return redirect()->route('login');
         }
 
+        if (! $request->user()->activo) {
+            abort(403, 'La cuenta está desactivada.');
+        }
+
         // Verificar si el rol del usuario esta entre los permitidos
         if (! in_array($request->user()->role, $roles, strict: true)) {
             // Si es una petición AJAX/API → respuesta JSON
@@ -42,8 +48,12 @@ class CheckRole
             }
 
             // redirigir al dashboard con mensaje de error
+            $destination = $request->user()->role === \App\Models\User::ROLE_CUSTOMER
+                ? 'smart.order'
+                : 'dashboard';
+
             return redirect()
-                ->route('dashboard')
+                ->route($destination)
                 ->with('error', 'No tienes permisos para acceder a esa sección.');
         }
 

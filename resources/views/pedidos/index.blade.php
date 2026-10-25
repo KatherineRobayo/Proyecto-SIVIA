@@ -60,7 +60,7 @@
                                 <a href="{{ route('pedidos.show', $pedido) }}" class="btn btn-sm btn-info">
                                     <i class="bi bi-eye"></i> Ver
                                 </a>
-                                @if ($pedido->estado === 'pendiente')
+                                @if ($pedido->estado === 'pendiente' && auth()->user()->role === \App\Models\User::ROLE_COMPANY_ADMIN)
                                     <a href="{{ route('pedidos.edit', $pedido) }}" class="btn btn-sm btn-warning">
                                         <i class="bi bi-pencil"></i> Editar
                                     </a>

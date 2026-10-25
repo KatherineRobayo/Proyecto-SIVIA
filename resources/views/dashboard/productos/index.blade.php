@@ -15,6 +15,43 @@ $productos = $productos ?? collect();
             {{ session('success') }}
         </div>
     @endif
+    @if ($errors->any())
+        <div class="mb-4 rounded-lg border border-red-500 bg-red-500/10 p-3 text-red-300">
+            @foreach ($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+        </div>
+    @endif
+
+    @if(auth()->user()->role === \App\Models\User::ROLE_COMPANY_ADMIN)
+        <section class="mb-6 rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
+            <h2 class="mb-4 text-lg font-semibold text-white">Categorías de esta empresa</h2>
+            <form action="{{ route('categorias.store') }}" method="POST" class="mb-4 flex gap-2">
+                @csrf
+                <input class="min-w-0 flex-1 rounded-lg border border-neutral-700 bg-neutral-950 px-3 py-2 text-white"
+                       name="nombre" maxlength="255" placeholder="Nueva categoría" required>
+                <button class="rounded-lg bg-blue-600 px-4 py-2 text-white" type="submit">Crear</button>
+            </form>
+            <div class="space-y-2">
+                @foreach ($categorias as $categoria)
+                    <div class="flex flex-wrap items-center gap-2">
+                        <form action="{{ route('categorias.update', $categoria) }}" method="POST" class="flex min-w-0 flex-1 gap-2">
+                            @csrf
+                            @method('PUT')
+                            <input class="min-w-0 flex-1 rounded-lg border border-neutral-700 bg-neutral-950 px-3 py-2 text-white"
+                                   name="nombre" value="{{ $categoria->nombre }}" maxlength="255" required>
+                            <button class="rounded-lg border border-neutral-700 px-3 py-2 text-neutral-200" type="submit">Guardar</button>
+                        </form>
+                        <form action="{{ route('categorias.destroy', $categoria) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button class="rounded-lg border border-red-500/40 px-3 py-2 text-red-300" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+    @endif
 
 {{-- ================= HEADER ================= --}}
 <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-8">
@@ -33,6 +70,7 @@ $productos = $productos ?? collect();
     <div class="flex items-center gap-3 flex-nowrap overflow-x-auto pb-1">
 
     {{-- NUEVO --}}
+    @if(auth()->user()->role === \App\Models\User::ROLE_COMPANY_ADMIN)
     <button onclick="openModal()"
     class="h-12 px-4 rounded-xl flex items-center gap-2 whitespace-nowrap
     bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-all">
@@ -40,6 +78,7 @@ $productos = $productos ?? collect();
         <span class="material-symbols-outlined text-[20px]">add</span>
         Nuevo Producto
     </button>
+    @endif
 
     {{-- VOZ --}}
     <button
@@ -75,7 +114,7 @@ $productos = $productos ?? collect();
     <div class="rounded-2xl bg-neutral-900 border border-neutral-800 p-5">
         <p class="text-sm text-neutral-400">Categorías</p>
         <h3 class="text-3xl font-bold text-cyan-400 mt-2">
-            {{ $productos->pluck('categoria')->filter()->unique()->count() }}
+            {{ $categorias->count() }}
         </h3>
     </div>
 
@@ -143,7 +182,7 @@ rounded-2xl bg-neutral-900 border border-neutral-800
 hover:border-blue-500/40 hover:scale-[1.02] transition-all p-4 
 flex flex-col justify-between mx-auto"
 data-nombre="{{ strtolower($producto->nombre) }}"
-data-categoria="{{ strtolower($producto->categoria) }}"
+data-categoria="{{ strtolower($producto->categoria?->nombre ?? $producto->getAttribute('categoria') ?? '') }}"
 data-precio="{{ $producto->precio_venta }}"
 data-stock="{{ $producto->stock }}"
 data-minimo="{{ $producto->stock_minimo }}">
@@ -172,7 +211,7 @@ data-minimo="{{ $producto->stock_minimo }}">
         </h3>
 
         <p class="text-sm text-neutral-400">
-            {{ $producto->categoria ?? 'General' }}
+            {{ $producto->categoria?->nombre ?? $producto->getAttribute('categoria') ?? 'General' }}
         </p>
 
     </div>
@@ -208,6 +247,7 @@ data-minimo="{{ $producto->stock_minimo }}">
     {{-- BOTONES --}}
     <div class="flex gap-2 mt-4">
 
+    @if(auth()->user()->role === \App\Models\User::ROLE_COMPANY_ADMIN)
     <button onclick='editarProducto(@json($producto))'
         class="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg 
         bg-blue-600 hover:bg-blue-500 text-white text-sm transition-all">
@@ -215,6 +255,7 @@ data-minimo="{{ $producto->stock_minimo }}">
     <span class="material-symbols-outlined text-[18px]">edit</span>
         Editar
     </button>
+    @endif
 
     {{-- HISTORIAL --}}
     <button onclick="alert('Funcionalidad futura: historial del producto')"
@@ -230,12 +271,13 @@ data-minimo="{{ $producto->stock_minimo }}">
 </div>
 
 {{-- ELIMINAR ABAJO --}}
+@if(auth()->user()->role === \App\Models\User::ROLE_COMPANY_ADMIN && $producto->estado === 'activo')
 <form method="POST" action="{{ route('productos.destroy',$producto) }}" class="mt-2">
 @csrf
 @method('DELETE')
 
 <button type="submit"
-onclick="return confirm('¿Eliminar producto?')"
+onclick="return confirm('¿Desactivar producto? Se conservará su historial.')"
 class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg 
 border border-red-500/40 text-red-400 
 hover:bg-red-500/10 hover:border-red-400
@@ -246,6 +288,9 @@ text-sm transition-all duration-200">
 </button>
 
 </form>
+@elseif($producto->estado !== 'activo')
+    <p class="mt-2 text-center text-xs text-neutral-500">Producto desactivado</p>
+@endif
 </div>
 
 @empty
@@ -320,17 +365,12 @@ class="space-y-4">
 
     <div>
         <label class="text-sm text-neutral-400 mb-1 block">Categoría</label>
-        <select id="categoria" name="categoria"
+        <select id="categoria" name="categoria_id"
         class="w-full px-4 py-3 rounded-xl bg-neutral-900 border border-neutral-800 text-white">
-            <option value="">Selecciona Categoría</option>
-            <option>Bebidas</option>
-            <option>Comidas</option>
-            <option>Postres</option>
-            <option>Farmacia</option>
-            <option>Aseo</option>
-            <option>Lácteos</option>
-            <option>Snacks</option>
-            <option>Otros</option>
+            <option value="">Sin categoría</option>
+            @foreach($categorias as $categoria)
+                <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+            @endforeach
         </select>
     </div>
 
@@ -453,7 +493,7 @@ function editarProducto(producto){
 
     document.querySelector('[name=nombre]').value = producto.nombre;
     document.querySelector('[name=codigo]').value = producto.codigo ?? '';
-    document.querySelector('[name=categoria]').value = producto.categoria ?? '';
+    document.querySelector('[name=categoria_id]').value = producto.categoria_id ?? '';
     document.querySelector('[name=precio_compra]').value = producto.precio_compra;
     document.querySelector('[name=precio_venta]').value = producto.precio_venta;
     document.querySelector('[name=iva]').value = producto.iva;

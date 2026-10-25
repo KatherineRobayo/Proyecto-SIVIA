@@ -131,6 +131,7 @@
                 </div>
                 @endif
 
+
                 {{-- Últimos movimientos del día --}}
                 @if($notifMovimientos->isNotEmpty())
                 <div class="px-4 py-2 border-b border-blue-900/20">
@@ -176,12 +177,12 @@
         </div>
 
         @if(auth()->user()->isAdmin())
-        <a href="{{ route('register') }}" class="text-neutral-400 hover:text-blue-200 hover:bg-white/5 p-2 rounded-full transition-colors" title="Registrar usuario">
+        <a href="{{ route('ajustes.index') }}" class="text-neutral-400 hover:text-blue-200 hover:bg-white/5 p-2 rounded-full transition-colors" title="Administrar usuarios">
             <span class="material-symbols-outlined">person_add</span>
         </a>
         @endif
 
-        <a href="{{ route('ajustes.index') }}"
+        <a href="{{ route(auth()->user()->isAdmin() ? 'ajustes.index' : 'profile.edit') }}"
            class="flex items-center gap-2 pl-2 border-l border-blue-900/30 hover:opacity-80 transition-opacity"
            title="Ajustes de perfil">
             <div class="h-8 w-8 rounded-full border border-blue-500/50 bg-surface-container-high overflow-hidden flex items-center justify-center flex-shrink-0">
@@ -221,6 +222,7 @@
             <span class="kf-label">Dashboard</span>
         </a>
 
+        @if(auth()->user()->empresa_id)
         <a href="{{ route('inventario.index') }}"
            class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-serif text-sm whitespace-nowrap {{ request()->routeIs('inventario.*') ? 'nav-active' : 'nav-item' }}">
             <span class="material-symbols-outlined text-lg flex-shrink-0">inventory_2</span>
@@ -239,11 +241,24 @@
             <span class="kf-label">Pedidos</span>
         </a>
 
+        <a href="{{ route('caja.index') }}"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-serif text-sm whitespace-nowrap {{ request()->routeIs('caja.*', 'ventas.*') ? 'nav-active' : 'nav-item' }}">
+            <span class="material-symbols-outlined text-lg flex-shrink-0">payments</span>
+            <span class="kf-label">Caja</span>
+        </a>
+
+        <a href="{{ route('ventas.index') }}"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-serif text-sm whitespace-nowrap {{ request()->routeIs('ventas.*') ? 'nav-active' : 'nav-item' }}">
+            <span class="material-symbols-outlined text-lg flex-shrink-0">receipt_long</span>
+            <span class="kf-label">Ventas</span>
+        </a>
+
         <a href="{{ route('recibos.index') }}"
            class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-serif text-sm whitespace-nowrap {{ request()->routeIs('recibos.*') ? 'nav-active' : 'nav-item' }}">
             <span class="material-symbols-outlined text-lg flex-shrink-0">receipt_long</span>
             <span class="kf-label">Recibos</span>
         </a>
+        @endif
 
         @if(auth()->user()->isAdmin())
 
@@ -253,19 +268,15 @@
         </span>
         </div>
 
-        <a href="{{ route('caja.index') }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-serif text-sm whitespace-nowrap {{ request()->routeIs('caja.*') ? 'nav-active' : 'nav-item' }}">
-            <span class="material-symbols-outlined text-lg flex-shrink-0">payments</span>
-            <span class="kf-label">Caja</span>
-        </a>
-
+        @if(auth()->user()->empresa_id)
         <a href="{{ route('reportes.index') }}"
            class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-serif text-sm whitespace-nowrap {{ request()->routeIs('reportes.*') ? 'nav-active' : 'nav-item' }}">
             <span class="material-symbols-outlined text-lg flex-shrink-0">analytics</span>
             <span class="kf-label">Reportes</span>
         </a>
+        @endif
 
-        <a href="{{ route('ajustes.index') }}"
+        <a href="{{ route(auth()->user()->isAdmin() ? 'ajustes.index' : 'profile.edit') }}"
            class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-serif text-sm whitespace-nowrap {{ request()->routeIs('ajustes.*') ? 'nav-active' : 'nav-item' }}">
             <span class="material-symbols-outlined text-lg flex-shrink-0">settings</span>
             <span class="kf-label">Ajustes</span>

@@ -42,28 +42,25 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('*', function ($view) {
-
             $notifAlertas = collect();
             $notifMovimientos = collect();
             $notifCount = 0;
+            $user = auth()->user();
 
-            try {
-                if (class_exists(\App\Models\Producto::class)) {
-                    $notifAlertas = Producto::whereColumn('stock', '<=', 'stock_minimo')
-                        ->take(5)
-                        ->get();
-                }
-
-                if (class_exists(\App\Models\Movimiento::class)) {
-                    $notifMovimientos = Movimiento::latest()
-                        ->take(5)
-                        ->get();
-                }
-
+            if ($user?->activo && $user->empresa_id !== null) {
+                $empresaId = (int) $user->empresa_id;
+                $notifAlertas = Producto::forEmpresa($empresaId)
+                    ->where('estado', 'activo')
+                    ->whereColumn('stock', '<=', 'stock_minimo')
+                    ->take(5)
+                    ->get();
+                $notifMovimientos = Movimiento::query()
+                    ->whereHas('producto', fn ($query) => $query->where('empresa_id', $empresaId))
+                    ->with('producto')
+                    ->latest()
+                    ->take(5)
+                    ->get();
                 $notifCount = $notifAlertas->count();
-
-            } catch (\Exception $e) {
-                // silencioso
             }
 
             $view->with([

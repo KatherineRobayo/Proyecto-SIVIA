@@ -111,6 +111,10 @@
 
     {{-- Desktop links --}}
     <div class="hidden md:flex items-center gap-8 font-serif text-sm">
+        <a href="{{ route('catalogo.clientes.empresas') }}"
+           class="text-neutral-400 hover:text-blue-300 px-3 py-1 transition-colors hover:bg-white/5 rounded">
+            Comprar
+        </a>
         <a href="#benefits"
            class="text-neutral-400 hover:text-blue-300 px-3 py-1 transition-colors hover:bg-white/5 rounded">
             Beneficios
@@ -131,6 +135,12 @@
             <span class="hidden md:block text-xs font-bold text-blue-500/70 uppercase tracking-widest">
                 {{ auth()->user()->name }}
             </span>
+            @if (auth()->user()->role === \App\Models\User::ROLE_CUSTOMER)
+                <a href="{{ route('catalogo.clientes.pedidos.index') }}"
+                   class="hidden md:block text-neutral-400 hover:text-blue-300 font-serif text-sm transition-colors">
+                    Mis pedidos
+                </a>
+            @endif
             <a href="{{ route('dashboard') }}"
                class="px-5 py-2 bg-primary-container text-on-primary-container font-bold text-sm
                       rounded-lg hover:brightness-110 transition-all shadow-lg shadow-blue-900/20">

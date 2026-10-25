@@ -7,7 +7,7 @@
             <h1>Pedido {{ $pedido->numero_pedido }}</h1>
         </div>
         <div class="col-md-4 text-end">
-            @if ($pedido->estado === 'pendiente')
+            @if ($pedido->estado === 'pendiente' && auth()->user()->role === \App\Models\User::ROLE_COMPANY_ADMIN)
                 <a href="{{ route('pedidos.edit', $pedido) }}" class="btn btn-warning">
                     <i class="bi bi-pencil"></i> Editar
                 </a>
@@ -42,8 +42,12 @@
                             {{ $pedido->empresa->nombre ?? 'N/A' }}
                         </div>
                         <div class="col-md-6">
-                            <strong>Usuario:</strong><br>
+                            <strong>Registró:</strong><br>
                             {{ $pedido->user->name ?? 'N/A' }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Cliente:</strong><br>
+                            {{ $pedido->cliente->name ?? 'No especificado' }}
                         </div>
                     </div>
 
@@ -168,6 +172,16 @@
                             <div class="mb-3">
                                 <label class="form-label">Fecha Entrega (si aplica)</label>
                                 <input type="datetime-local" name="fecha_entrega_real" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Método de pago al completar</label>
+                                <select name="metodo_pago" class="form-control">
+                                    <option value="">Usar el método actual si ya está definido</option>
+                                    <option value="efectivo">Efectivo</option>
+                                    <option value="tarjeta">Tarjeta</option>
+                                    <option value="transferencia">Transferencia</option>
+                                </select>
                             </div>
 
                             <button type="submit" class="btn btn-primary w-100">

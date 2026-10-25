@@ -67,8 +67,8 @@
         <select name="categoria"
         class="bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-2 text-white">
             <option value="todos">Todas</option>
-            @foreach($categorias as $cat)
-                <option value="{{ $cat }}">{{ $cat }}</option>
+            @foreach($categorias as $id => $cat)
+                <option value="{{ $id }}" @selected((string) request('categoria') === (string) $id)>{{ $cat }}</option>
             @endforeach
         </select>
 
@@ -115,7 +115,7 @@
                 </span>
             </div>
 
-            <p class="text-sm text-neutral-400 mb-3">{{ $p->categoria }}</p>
+            <p class="text-sm text-neutral-400 mb-3">{{ $p->categoria?->nombre ?? $p->getAttribute('categoria') ?? 'Sin categoría' }}</p>
 
             {{-- INFO --}}
             <div class="grid grid-cols-2 gap-3 text-sm">

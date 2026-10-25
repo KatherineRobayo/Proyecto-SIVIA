@@ -10,11 +10,18 @@ class DetallePedido extends Model
     protected $table = 'detalle_pedidos';
 
     protected $fillable = [
+        'empresa_id',
         'pedido_id',
         'producto_id',
         'cantidad',
         'precio',
         'subtotal',
+    ];
+
+    protected $casts = [
+        'cantidad' => 'integer',
+        'precio' => 'decimal:2',
+        'subtotal' => 'decimal:2',
     ];
 
     /**
@@ -31,5 +38,10 @@ class DetallePedido extends Model
     public function producto(): BelongsTo
     {
         return $this->belongsTo(Producto::class);
+    }
+
+    public function empresa(): BelongsTo
+    {
+        return $this->belongsTo(Empresa::class);
     }
 }

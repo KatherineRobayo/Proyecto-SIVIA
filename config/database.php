@@ -75,8 +75,6 @@ return [
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
             
-            // ESTA ES LA LÍNEA MÁGICA QUE AGREGAMOS
-            'foreign_key_constraints' => false,
         ],
 
         'sqlsrv' => [

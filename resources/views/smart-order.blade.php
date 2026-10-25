@@ -15,7 +15,23 @@
             Volver al inicio
         </a>
 
+        @if (! isset($selectedBusiness) && ! empty($smartOrderError))
+            <p class="mt-6 rounded-xl border border-amber-400/20 bg-amber-400/5 px-4 py-3 text-sm text-amber-200" role="alert">
+                {{ $smartOrderError }}
+            </p>
+        @endif
+
         @isset($selectedBusiness)
+            @if (session('success'))
+                <p class="mt-6 rounded-xl border border-blue-400/20 bg-blue-400/5 px-4 py-3 text-sm text-blue-200" role="status">{{ session('success') }}</p>
+            @endif
+            @if ($errors->any())
+                <div class="mt-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200" role="alert">
+                    @foreach ($errors->all() as $error)
+                        <p>{{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
             <section class="mt-8 rounded-3xl border border-blue-900/30 bg-neutral-900/80 p-6 shadow-2xl backdrop-blur-xl sm:p-10">
                 <div class="mb-8 flex flex-col gap-6 border-b border-blue-900/20 pb-8 sm:flex-row sm:items-center sm:justify-between">
                     <div>
@@ -25,20 +41,130 @@
                             <p class="mt-2 text-neutral-400">{{ $selectedBusiness->direccion }}</p>
                         @endif
                     </div>
-                    <a href="{{ route('smart.order') }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-500/30 px-5 py-3 font-semibold text-blue-300 transition hover:bg-blue-500/10">
-                        <span class="material-symbols-outlined text-lg" aria-hidden="true">storefront</span>
-                        Cambiar negocio
-                    </a>
+                    <div class="flex flex-wrap gap-3">
+                        <a href="{{ route('smart.order.assistant') }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-500/15 px-5 py-3 font-semibold text-blue-200 ring-1 ring-blue-400/30 transition hover:bg-blue-500/25">
+                            <span class="material-symbols-outlined text-lg" aria-hidden="true">auto_awesome</span>
+                            ✨ ¿Necesitas ayuda para pedir?
+                        </a>
+                        <a href="{{ route('smart.order') }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-500/30 px-5 py-3 font-semibold text-blue-300 transition hover:bg-blue-500/10">
+                            <span class="material-symbols-outlined text-lg" aria-hidden="true">storefront</span>
+                            Cambiar negocio
+                        </a>
+                    </div>
                 </div>
 
-                <div class="rounded-2xl border border-neutral-800 bg-neutral-950/80 p-8 text-center sm:p-12">
-                    <span class="material-symbols-outlined text-5xl text-blue-400" aria-hidden="true">inventory_2</span>
-                    <h2 class="mt-4 font-serif text-2xl font-bold text-white">Catálogo de {{ $selectedBusiness->nombre }}</h2>
-                    <p class="mx-auto mt-3 max-w-xl leading-relaxed text-neutral-400">
-                        Este espacio queda asociado exclusivamente a este negocio. Los productos de su catálogo se prepararán aquí en la siguiente fase.
-                    </p>
-                </div>
+                <section aria-labelledby="catalog-title">
+                    <div class="mb-6">
+                        <h2 id="catalog-title" class="font-serif text-2xl font-bold text-white">Catálogo</h2>
+                        <p class="mt-2 text-sm text-neutral-400">Productos disponibles de {{ $selectedBusiness->nombre }}.</p>
+                    </div>
+
+                    @if (! empty($catalogError))
+                        <div class="rounded-2xl border border-red-500/20 bg-red-500/10 px-5 py-6 text-center text-sm text-red-200" role="alert">
+                            {{ $catalogError }}
+                        </div>
+                    @else
+                        <form method="GET" action="{{ route('smart.order.catalog') }}" class="mb-6 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(12rem,auto)_auto]">
+                            <label class="sr-only" for="catalog-search">Buscar productos o categorías</label>
+                            <input id="catalog-search" type="search" name="search" value="{{ request('search') }}"
+                                   placeholder="Buscar productos o categorías"
+                                   class="min-w-0 rounded-xl border border-blue-900/30 bg-neutral-950 px-4 py-3 text-white placeholder:text-neutral-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                            <label class="sr-only" for="catalog-category">Filtrar por categoría</label>
+                            <select id="catalog-category" name="categoria"
+                                    class="rounded-xl border border-blue-900/30 bg-neutral-950 px-4 py-3 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                                <option value="">Todas las categorías</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}" @selected((string) request('categoria') === (string) $category->id)>
+                                        {{ $category->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="rounded-xl bg-blue-500 px-5 py-3 font-semibold text-neutral-950 transition hover:bg-blue-400">
+                                Buscar
+                            </button>
+                        </form>
+
+                        @if ($products->isEmpty())
+                            <div class="rounded-2xl border border-neutral-800 bg-neutral-950/80 p-8 text-center sm:p-12">
+                                <span class="material-symbols-outlined text-5xl text-blue-400" aria-hidden="true">inventory_2</span>
+                                <h3 class="mt-4 font-serif text-xl font-bold text-white">No hay productos disponibles</h3>
+                                <p class="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-neutral-400">
+                                    @if (request()->filled('search') || request()->filled('categoria'))
+                                        No encontramos productos disponibles con esos filtros. Prueba otra búsqueda o categoría.
+                                    @else
+                                        Este negocio todavía no tiene productos activos con existencias.
+                                    @endif
+                                </p>
+                            </div>
+                        @else
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                @foreach ($products as $product)
+                                    <article class="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950/80">
+                                        @if ($product->imagen)
+                                            <img src="{{ asset('storage/' . $product->imagen) }}" alt="{{ $product->nombre }}"
+                                                 loading="lazy" class="h-48 w-full object-cover">
+                                        @else
+                                            <div class="flex h-48 items-center justify-center bg-neutral-900 text-blue-300" aria-hidden="true">
+                                                <span class="material-symbols-outlined text-5xl">inventory_2</span>
+                                            </div>
+                                        @endif
+                                        <div class="p-5">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <h3 class="font-serif text-lg font-bold text-white">{{ $product->nombre }}</h3>
+                                                @if ($product->categoria)
+                                                    <span class="shrink-0 rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-xs text-blue-200">
+                                                        {{ $product->categoria->nombre }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <p class="mt-4 text-xl font-bold text-blue-300">
+                                                ${{ number_format((float) $product->precio_venta, 0, ',', '.') }}
+                                            </p>
+                                            <p class="mt-1 text-sm text-neutral-400">
+                                                Disponible · {{ $product->stock }} en existencia
+                                            </p>
+                                            <form method="POST" action="{{ route('smart.order.cart.add') }}" class="mt-4 flex items-end gap-3">
+                                                @csrf
+                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                <label class="min-w-0 flex-1 text-xs text-neutral-400">
+                                                    Cantidad
+                                                    <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" required
+                                                           class="mt-1 w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-white focus:border-blue-500 focus:outline-none">
+                                                </label>
+                                                <button type="submit" class="rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-bold text-neutral-950 transition hover:bg-blue-400">
+                                                    Añadir a Tu Pedido
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </article>
+                                @endforeach
+                            </div>
+
+                            @if ($products->hasPages())
+                                <nav class="mt-6" aria-label="Páginas del catálogo">
+                                    {{ $products->links() }}
+                                </nav>
+                            @endif
+                        @endif
+                    @endif
+                </section>
             </section>
+
+            <aside class="fixed inset-x-4 bottom-4 z-20 mx-auto max-w-md rounded-2xl border border-blue-500/40 bg-neutral-900/95 p-4 shadow-2xl shadow-blue-950/40 backdrop-blur-xl sm:inset-x-auto sm:bottom-6 sm:right-6 sm:w-80"
+                   aria-label="Resumen de Tu Pedido">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="font-serif text-lg font-bold text-white">Tu Pedido</h2>
+                        <p class="mt-1 text-sm text-neutral-400">
+                            {{ $cartSummary['quantity'] }} {{ $cartSummary['quantity'] === 1 ? 'producto' : 'productos' }}
+                            · ${{ number_format($cartSummary['total'], 2, ',', '.') }}
+                        </p>
+                    </div>
+                    <a href="{{ route('smart.order.cart') }}" class="shrink-0 rounded-xl bg-blue-500 px-4 py-3 text-sm font-bold text-neutral-950 transition hover:bg-blue-400">
+                        Revisar pedido
+                    </a>
+                </div>
+            </aside>
         @else
             <section class="mx-auto mt-12 max-w-3xl text-center">
                 <div class="mx-auto inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-blue-300">
