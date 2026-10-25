@@ -48,7 +48,7 @@ class SmartOrderAssistantTest extends TestCase
             ->assertOk()
             ->assertSee('Esta propuesta usa productos reales del catálogo seleccionado.')
             ->assertSee('Pan integral')
-            ->assertSee('Añadir propuesta a Tu Pedido');
+            ->assertSee('Sí, confirmar y pagar');
         $this->assertSame(0, Pedido::count());
         $this->assertSame(0, Movimiento::count());
         $this->assertSame(5, $product->fresh()->stock);
@@ -244,5 +244,13 @@ class SmartOrderAssistantTest extends TestCase
             'stock_minimo' => 1,
             'estado' => 'activo',
         ]);
+    }
+    protected function tearDown(): void 
+    {
+        // Restaurar los manejadores de errores de PHP para evitar el 'Risky' de PHPUnit
+        restore_error_handler();
+        restore_exception_handler();
+
+        parent::tearDown();
     }
 }
