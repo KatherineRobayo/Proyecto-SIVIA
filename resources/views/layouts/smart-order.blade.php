@@ -17,6 +17,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-neutral-950 font-sans antialiased text-white">
+     <x-theme-toggle />
     @yield('content')
     @stack('scripts')
 </body>

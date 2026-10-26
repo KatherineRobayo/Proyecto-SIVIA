@@ -1,3 +1,84 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* =========================================
+   MODO CLARO SIVIA (Versión Final)
+   ========================================= */
+
+body.modo-claro {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+/* Tarjetas, paneles y contenedores oscuros */
+body.modo-claro .bg-neutral-950,
+body.modo-claro .bg-neutral-900,
+body.modo-claro .bg-neutral-800,
+body.modo-claro .bg-neutral-950\/80,
+body.modo-claro .bg-neutral-900\/80,
+body.modo-claro .bg-neutral-800\/80,
+body.modo-claro .bg-black {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+}
+
+/* Textos blancos y grises que deben volverse oscuros */
+body.modo-claro .text-white,
+body.modo-claro .text-neutral-100,
+body.modo-claro .text-neutral-200,
+body.modo-claro .text-neutral-300,
+body.modo-claro .text-neutral-400,
+body.modo-claro .text-neutral-500 {
+    color: #1e293b !important; /* Gris oscuro para que se lea bien */
+}
+
+/* Títulos y textos con fuente Serif */
+body.modo-claro h1, 
+body.modo-claro h2, 
+body.modo-claro h3,
+body.modo-claro .font-serif {
+    color: #0f172a !important;
+}
+
+/* Inputs, selects y textareas */
+body.modo-claro input,
+body.modo-claro select,
+body.modo-claro textarea {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+
+/* Arreglar el botón de Personalizar (que tiene borde) */
+body.modo-claro button.border-neutral-700,
+body.modo-claro .border-neutral-700 {
+    border-color: #cbd5e1 !important;
+    color: #334155 !important;
+}
+
+/* Excluir las imágenes para que no se modifiquen */
+body.modo-claro img {
+    filter: none !important;
+}
+
+/* Arreglos específicos para el Asistente */
+body.modo-claro .bg-neutral-900\/90,
+body.modo-claro .bg-neutral-950\/70,
+body.modo-claro .bg-neutral-900\/80 {
+    background-color: #ffffff !important;
+}
+
+/* Arreglar los títulos y textos dentro de los paneles del asistente */
+body.modo-claro .text-blue-200,
+body.modo-claro .text-blue-300 {
+    color: #1d4ed8 !important; /* Azul más oscuro para que contraste con blanco */
+}
+
+/* Arreglar los inputs de cantidad (los que se ven blancos) */
+body.modo-claro input[type="number"] {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+}

@@ -64,6 +64,7 @@
     @stack('styles')
 </head>
 <body class="text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+<x-theme-toggle /> 
 
 {{-- [QoL: Golden Stardust Background] --}}
 <x-golden-stardust />

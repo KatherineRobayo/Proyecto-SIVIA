@@ -16,6 +16,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased bg-black text-white">
+         <x-theme-toggle />
+         
         <div class="min-h-screen bg-transparent">
 
             @include('layouts.navigation')
